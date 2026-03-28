@@ -13,6 +13,8 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
 
     public function getAdminRoles()
     {
-        return $this->model->where('guard_name', 'admin')->get();
+        return $this->model->where('guard_name', 'admin')
+                           ->where('name', '!=', 'super_admin')
+                           ->get();
     }
 }

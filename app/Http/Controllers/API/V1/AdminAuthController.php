@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Admin\Auth\LoginRequest;
 use App\Services\AdminAuthService;
 
 /**
  * @group Admin
+ * @subgroup Auth
  */
 class AdminAuthController extends BaseController
 {
@@ -37,6 +38,14 @@ class AdminAuthController extends BaseController
 
     public function me()
     {
-        return $this->successResponse(auth('admin')->user(), 'Admin profile retrieved successfully');
+        $admin = auth('admin')->user();
+        return $this->successResponse([
+            'id' => $admin->id,
+            'name' => $admin->name,
+            'email' => $admin->email,
+            'avatar' => $admin->avatar_url,
+            'roles' => $admin->getRoleNames(),
+            'permissions' => $admin->getAllPermissions()->pluck('name')->toArray()
+        ], 'Admin profile retrieved successfully');
     }
 }

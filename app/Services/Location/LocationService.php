@@ -40,7 +40,11 @@ class LocationService
     }
 
     public function deleteDivision($id) {
-        return $this->divisionRepo->delete($id);
+        $division = $this->divisionRepo->find($id);
+        if ($division->districts()->count() > 0) {
+            throw new \RuntimeException("Cannot delete division: It contains districts. Delete the districts first.");
+        }
+        return $division->delete();
     }
 
     // --- Districts ---
@@ -71,7 +75,11 @@ class LocationService
     }
 
     public function deleteDistrict($id) {
-        return $this->districtRepo->delete($id);
+        $district = $this->districtRepo->find($id);
+        if ($district->thanas()->count() > 0) {
+            throw new \RuntimeException("Cannot delete district: It contains thanas. Delete the thanas first.");
+        }
+        return $district->delete();
     }
 
     // --- Thanas ---

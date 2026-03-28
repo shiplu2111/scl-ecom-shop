@@ -7,6 +7,7 @@ use App\Models\Page;
 
 /**
  * @group Public
+ * @subgroup Page
  */
 class PageController extends Controller
 {

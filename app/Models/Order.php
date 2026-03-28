@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-#[Fillable(['user_id', 'order_number', 'subtotal', 'discount_amount', 'delivery_charge', 'grand_total', 'payment_method', 'payment_status', 'order_status', 'shipping_address_id', 'billing_address_id', 'coupon_id', 'courier_name', 'tracking_number', 'consignment_id'])]
+#[Fillable(['user_id', 'order_number', 'subtotal', 'discount_amount', 'delivery_charge', 'grand_total', 'payment_method', 'payment_status', 'order_status', 'shipping_address_id', 'billing_address_id', 'coupon_id', 'delivery_charge_paid', 'paid_amount', 'due_amount', 'courier_name', 'tracking_number', 'consignment_id'])]
 class Order extends Model
 {
     use LogsActivity;

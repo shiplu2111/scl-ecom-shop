@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['order_id', 'product_id', 'product_variant_id', 'quantity', 'unit_price', 'total_price'])]
+#[Fillable(['order_id', 'product_id', 'product_variant_id', 'quantity', 'unit_price', 'buying_price', 'total_price'])]
 class OrderItem extends Model
 {
+    protected $hidden = ['buying_price'];
     public function order()
     {
         return $this->belongsTo(Order::class);

@@ -7,7 +7,8 @@ use App\Services\WishlistService;
 use Illuminate\Http\Request;
 
 /**
- * @group Customer
+ * @group User
+ * @subgroup Wishlist
  */
 class WishlistController extends BaseController
 {

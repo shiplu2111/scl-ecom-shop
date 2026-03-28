@@ -16,6 +16,7 @@
         "laravel/scout": "*",
         "laravel/tinker": "^3.0",
         "predis/predis": "*",
+        "pusher/pusher-php-server": "*",
         "spatie/laravel-activitylog": "*",
         "spatie/laravel-permission": "*",
         "tymon/jwt-auth": "*"

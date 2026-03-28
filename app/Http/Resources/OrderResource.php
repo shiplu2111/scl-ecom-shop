@@ -19,7 +19,13 @@ class OrderResource extends JsonResource
             'payment_method' => $this->payment_method,
             'payment_status' => $this->payment_status,
             'order_status' => $this->order_status,
+            'delivery_charge_paid' => (bool) $this->delivery_charge_paid,
+            'paid_amount' => $this->paid_amount,
+            'due_amount' => $this->due_amount,
             'created_at' => $this->created_at,
+            'items_count' => $this->whenCounted('items', $this->items_count, $this->whenLoaded('items', function() {
+                return $this->items->count();
+            })),
             'invoice_data' => [
                 'issue_date' => $this->created_at->format('Y-m-d'),
                 'due_date' => $this->payment_method === 'cod' ? 'On Delivery' : 'Paid',

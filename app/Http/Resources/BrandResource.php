@@ -14,6 +14,7 @@ class BrandResource extends JsonResource
             'name' => $this->name,
             'slug' => $this->slug,
             'logo' => $this->logo ? url('storage/' . $this->logo) : null,
+            'seo_metadata' => new SeoMetadataResource($this->whenLoaded('seoMetadata')),
         ];
     }
 }

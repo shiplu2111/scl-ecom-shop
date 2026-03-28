@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 
 /**
  * @group Admin
+ * @subgroup Courier
  */
 class CourierController extends Controller
 {

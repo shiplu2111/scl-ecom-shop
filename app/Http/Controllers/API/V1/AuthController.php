@@ -8,7 +8,8 @@ use App\Services\CustomerAuthService;
 use Illuminate\Http\Request;
 
 /**
- * @group Customer
+ * @group Public
+ * @subgroup Auth
  */
 class AuthController extends BaseController
 {

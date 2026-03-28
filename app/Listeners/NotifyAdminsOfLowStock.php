@@ -23,7 +23,7 @@ class NotifyAdminsOfLowStock
      */
     public function handle(LowStockDetected $event): void
     {
-        $admins = User::where('role', 'admin')->get();
+        $admins = \App\Models\Admin::all();
         Notification::send($admins, new \App\Notifications\LowStockNotification($event->variant));
     }
 }

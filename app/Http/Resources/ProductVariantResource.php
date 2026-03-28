@@ -14,8 +14,9 @@ class ProductVariantResource extends JsonResource
             'sku'   => $this->sku,
             'size'  => $this->size,
             'color' => $this->color,
-            'price' => $this->price,
-            'stock' => $this->stock,
+            'price'          => $this->price,
+            'discount_price' => $this->discount_price,
+            'stock'          => $this->stock,
         ];
     }
 }

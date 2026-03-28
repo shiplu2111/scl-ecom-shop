@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Repositories\RoleRepositoryInterface;
+use App\Models\Admin;
 
 class RoleService extends BaseService
 {
@@ -31,18 +32,31 @@ class RoleService extends BaseService
 
     public function updateRole(int $id, array $data)
     {
-        return $this->roleRepository->update($id, $data);
+        $role = $this->roleRepository->update($id, $data);
+        Admin::query()->update(['device_id' => null]);
+        return $role;
     }
 
     public function deleteRole(int $id)
     {
-        return $this->roleRepository->delete($id);
+        $role = $this->roleRepository->find($id);
+        
+        if ($role->users()->exists()) {
+            throw new \Exception("Cannot delete role '{$role->name}' because it is assigned to one or more admins.");
+        }
+        
+        $role = $this->roleRepository->delete($id);
+        Admin::query()->update(['device_id' => null]);
+        return $role;
     }
 
     public function assignPermissionsToRole(int $roleId, array $permissions)
     {
         $role = $this->roleRepository->find($roleId);
         $role->syncPermissions($permissions); // Spatie handles this implicitly onto mapped structures
+        
+        Admin::query()->update(['device_id' => null]);
+        
         return $role;
     }
 }

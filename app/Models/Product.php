@@ -3,14 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-#[Fillable(['category_id', 'brand_id', 'name', 'slug', 'sku', 'description', 'price', 'is_active'])]
+use App\Traits\Seoable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+#[Fillable(['category_id', 'brand_id', 'name', 'slug', 'sku', 'description', 'price', 'buying_price', 'discount_price', 'is_active', 'is_featured', 'is_flash_sale', 'is_best_seller', 'specifications'])]
 class Product extends Model
 {
-    use LogsActivity;
+    use HasFactory, LogsActivity, SoftDeletes, Seoable;
+
+    protected $hidden = ['buying_price'];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_flash_sale' => 'boolean',
+        'is_best_seller' => 'boolean',
+        'specifications' => 'array',
+    ];
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -43,5 +57,10 @@ class Product extends Model
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

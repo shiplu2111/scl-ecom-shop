@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 
 /**
  * @group Public
+ * @subgroup Location
  */
 class LocationController extends Controller
 {

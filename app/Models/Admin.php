@@ -2,19 +2,28 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use Spatie\Permission\Traits\HasRoles;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 
-#[Fillable(['name', 'email', 'password', 'device_id', 'is_active'])]
-#[Hidden(['password', 'remember_token'])]
 class Admin extends Authenticatable implements JWTSubject
 {
-    use HasRoles, LogsActivity;
+    use HasRoles;
+    use LogsActivity;
+    use HasFactory;
+    use Notifiable;
+
+    protected $fillable = ['name', 'email', 'avatar', 'password', 'device_id', 'is_active'];
+    protected $hidden = ['password', 'remember_token'];
+
+    protected $appends = ['avatar_url'];
+
+    protected $guard_name = 'admin';
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -22,6 +31,11 @@ class Admin extends Authenticatable implements JWTSubject
             ->logAll()
             ->logOnlyDirty()
             ->dontSubmitEmptyLogs();
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
     }
 
     protected function casts(): array

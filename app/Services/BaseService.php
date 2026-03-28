@@ -2,7 +2,21 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
+
 class BaseService
 {
-    // Define common service core logic here, like error handling, standardized responses for internal processes, etc.
+    protected function generateUniqueSlug(string $name, $model, int $id = null): string
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while ($model::where('slug', $slug)->where('id', '!=', $id)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
+        return $slug;
+    }
 }

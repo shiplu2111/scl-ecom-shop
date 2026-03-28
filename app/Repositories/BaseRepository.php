@@ -40,4 +40,14 @@ class BaseRepository implements BaseRepositoryInterface
         $record = $this->find($id);
         return $record->delete();
     }
+
+    public function bulkDelete(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)->delete();
+    }
+
+    public function getModel()
+    {
+        return $this->model;
+    }
 }

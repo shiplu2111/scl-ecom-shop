@@ -11,10 +11,13 @@ class CategoryResource extends JsonResource
     {
         return [
             'id'    => $this->id,
+            'parent_id' => $this->parent_id,
             'name'  => $this->name,
             'slug'  => $this->slug,
             'image' => $this->image ? url('storage/' . $this->image) : null,
             'children' => CategoryResource::collection($this->whenLoaded('children')),
+            'parent' => new CategoryResource($this->whenLoaded('parent')),
+            'seo_metadata' => new SeoMetadataResource($this->whenLoaded('seoMetadata')),
         ];
     }
 }

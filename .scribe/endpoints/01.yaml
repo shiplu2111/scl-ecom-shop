@@ -1,246 +1,6 @@
-name: Customer
+name: User
 description: ''
 endpoints:
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/register
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      name:
-        custom: []
-        name: name
-        description: 'Must not be greater than 255 characters.'
-        required: true
-        example: b
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      email:
-        custom: []
-        name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
-        required: false
-        example: zbailey@example.net
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      phone:
-        custom: []
-        name: phone
-        description: 'Must not be greater than 20 characters.'
-        required: false
-        example: iyvdljnikhwaykcm
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-      password:
-        custom: []
-        name: password
-        description: 'Must be at least 8 characters.'
-        required: true
-        example: '/kXaz<m5L[)~=NG5a:'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      device_id:
-        custom: []
-        name: device_id
-        description: ''
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      name: b
-      email: zbailey@example.net
-      phone: iyvdljnikhwaykcm
-      password: '/kXaz<m5L[)~=NG5a:'
-      device_id: architecto
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 422
-        content: '{"status":false,"message":"Validation Error","data":{},"errors":{"password":["The password field confirmation does not match."]}}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/login
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      email:
-        custom: []
-        name: email
-        description: ''
-        required: true
-        example: gbailey@example.net
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      password:
-        custom: []
-        name: password
-        description: ''
-        required: true
-        example: '|]|{+-'
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      device_id:
-        custom: []
-        name: device_id
-        description: ''
-        required: false
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: true
-        deprecated: false
-    cleanBodyParameters:
-      email: gbailey@example.net
-      password: '|]|{+-'
-      device_id: architecto
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 422
-        content: '{"status":false,"message":"Validation Error","data":{},"errors":{"email":["Invalid credentials."]}}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/reset-password
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      identity:
-        custom: []
-        name: identity
-        description: ''
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      new_password:
-        custom: []
-        name: new_password
-        description: 'Must be at least 8 characters.'
-        required: true
-        example: ngzmiyvdljnikhwaykcmyuwpwl
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      identity: architecto
-      new_password: ngzmiyvdljnikhwaykcmyuwpwl
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 422
-        content: '{"status":false,"message":"Validation Error","data":{},"errors":{"new_password":["The new password field confirmation does not match."]}}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
   -
     custom: []
     httpMethods:
@@ -248,9 +8,9 @@ endpoints:
     uri: api/v1/cart
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Cart
       subgroupDescription: ''
       title: ''
       description: ''
@@ -288,9 +48,9 @@ endpoints:
     uri: api/v1/cart/items
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Cart
       subgroupDescription: ''
       title: ''
       description: ''
@@ -363,9 +123,9 @@ endpoints:
     uri: 'api/v1/cart/items/{itemId}'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Cart
       subgroupDescription: ''
       title: ''
       description: ''
@@ -415,9 +175,9 @@ endpoints:
     uri: api/v1/cart/apply-coupon
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Cart
       subgroupDescription: ''
       title: ''
       description: ''
@@ -467,9 +227,9 @@ endpoints:
     uri: api/v1/cart/remove-coupon
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Cart
       subgroupDescription: ''
       title: ''
       description: ''
@@ -503,197 +263,13 @@ endpoints:
   -
     custom: []
     httpMethods:
-      - POST
-    uri: api/v1/logout
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"status":false,"message":"Unauthenticated","data":{},"errors":null}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/refresh
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"status":false,"message":"Unauthenticated","data":{},"errors":null}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - GET
-    uri: api/v1/me
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"status":false,"message":"Unauthenticated","data":{},"errors":null}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
-      - POST
-    uri: api/v1/change-password
-    metadata:
-      custom: []
-      groupName: Customer
-      groupDescription: ''
-      subgroup: ''
-      subgroupDescription: ''
-      title: ''
-      description: ''
-      authenticated: false
-      deprecated: false
-    headers:
-      Content-Type: application/json
-      Accept: application/json
-    urlParameters: []
-    cleanUrlParameters: []
-    queryParameters: []
-    cleanQueryParameters: []
-    bodyParameters:
-      current_password:
-        custom: []
-        name: current_password
-        description: ''
-        required: true
-        example: architecto
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-      new_password:
-        custom: []
-        name: new_password
-        description: 'Must be at least 8 characters.'
-        required: true
-        example: ngzmiyvdljnikhwaykcmyuwpwl
-        type: string
-        enumValues: []
-        exampleWasSpecified: false
-        nullable: false
-        deprecated: false
-    cleanBodyParameters:
-      current_password: architecto
-      new_password: ngzmiyvdljnikhwaykcmyuwpwl
-    fileParameters: []
-    responses:
-      -
-        custom: []
-        status: 401
-        content: '{"status":false,"message":"Unauthenticated","data":{},"errors":null}'
-        headers:
-          cache-control: 'no-cache, private'
-          content-type: application/json
-          access-control-allow-origin: '*'
-        description: null
-    responseFields: []
-    auth: []
-    controller: null
-    method: null
-    route: null
-  -
-    custom: []
-    httpMethods:
       - GET
     uri: api/v1/profile
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -731,9 +307,9 @@ endpoints:
     uri: api/v1/profile
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -795,9 +371,9 @@ endpoints:
     uri: api/v1/profile/avatar
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -847,9 +423,9 @@ endpoints:
     uri: api/v1/addresses
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -887,9 +463,9 @@ endpoints:
     uri: api/v1/addresses
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -999,9 +575,9 @@ endpoints:
     uri: 'api/v1/addresses/{id}'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1087,7 +663,7 @@ endpoints:
         name: is_default
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -1099,7 +675,7 @@ endpoints:
       thana_id: architecto
       address_line: 'n'
       postal_code: gzmiyvdljnikhway
-      is_default: true
+      is_default: false
     fileParameters: []
     responses:
       -
@@ -1123,9 +699,9 @@ endpoints:
     uri: 'api/v1/addresses/{id}'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1175,9 +751,9 @@ endpoints:
     uri: 'api/v1/addresses/{id}/default'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Profile
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1227,9 +803,9 @@ endpoints:
     uri: api/v1/notifications
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Notifications
       subgroupDescription: ''
       title: 'Fetch user notifications (paginated)'
       description: ''
@@ -1267,9 +843,9 @@ endpoints:
     uri: api/v1/notifications/read-all
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Notifications
       subgroupDescription: ''
       title: 'Mark all notifications as read.'
       description: ''
@@ -1307,9 +883,9 @@ endpoints:
     uri: 'api/v1/notifications/{id}/read'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Notifications
       subgroupDescription: ''
       title: 'Mark a specific notification as read.'
       description: ''
@@ -1359,9 +935,9 @@ endpoints:
     uri: api/v1/wishlists
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Wishlist
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1399,9 +975,9 @@ endpoints:
     uri: api/v1/wishlists/toggle
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Wishlist
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1451,9 +1027,9 @@ endpoints:
     uri: api/v1/checkout
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Orders
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1494,7 +1070,7 @@ endpoints:
         name: payment_method
         description: ''
         required: true
-        example: online
+        example: cod
         type: string
         enumValues:
           - cod
@@ -1504,7 +1080,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       shipping_address_id: architecto
-      payment_method: online
+      payment_method: cod
     fileParameters: []
     responses:
       -
@@ -1528,9 +1104,9 @@ endpoints:
     uri: api/v1/orders
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Orders
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1568,9 +1144,9 @@ endpoints:
     uri: 'api/v1/orders/{id}'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Orders
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1620,9 +1196,9 @@ endpoints:
     uri: api/v1/payment/initiate
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Payments
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1652,7 +1228,7 @@ endpoints:
         name: gateway
         description: ''
         required: true
-        example: uddoktapay
+        example: stripe
         type: string
         enumValues:
           - stripe
@@ -1662,7 +1238,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       order_id: architecto
-      gateway: uddoktapay
+      gateway: stripe
     fileParameters: []
     responses:
       -
@@ -1686,9 +1262,9 @@ endpoints:
     uri: 'api/v1/payment/{gateway}/verify'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Payments
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1750,9 +1326,9 @@ endpoints:
     uri: 'api/v1/payment/{gateway}/verify'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Payments
       subgroupDescription: ''
       title: ''
       description: ''
@@ -1814,9 +1390,9 @@ endpoints:
     uri: 'api/v1/payment/{gateway}/webhook'
     metadata:
       custom: []
-      groupName: Customer
+      groupName: User
       groupDescription: ''
-      subgroup: ''
+      subgroup: Payments
       subgroupDescription: ''
       title: ''
       description: ''

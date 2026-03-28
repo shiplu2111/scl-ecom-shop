@@ -7,7 +7,8 @@ use App\Services\Gateways\PaymentManager;
 use Illuminate\Http\Request;
 
 /**
- * @group Customer
+ * @group User
+ * @subgroup Payments
  */
 class PaymentController extends BaseController
 {

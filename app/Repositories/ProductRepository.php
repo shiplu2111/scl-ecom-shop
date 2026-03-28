@@ -32,12 +32,44 @@ class ProductRepository extends BaseRepository implements ProductRepositoryInter
             $query->where('brand_id', $filters['brand_id']);
         }
 
-        if (!empty($filters['min_price'])) {
-            $query->where('price', '>=', $filters['min_price']);
+        if (isset($filters['is_featured'])) {
+            $query->where('is_featured', $filters['is_featured']);
         }
 
-        if (!empty($filters['max_price'])) {
-            $query->where('price', '<=', $filters['max_price']);
+        if (isset($filters['is_flash_sale'])) {
+            $query->where('is_flash_sale', $filters['is_flash_sale']);
+        }
+
+        if (isset($filters['is_best_seller'])) {
+            $query->where('is_best_seller', $filters['is_best_seller']);
+        }
+
+        if (!empty($filters['rating'])) {
+            $query->where('rating', '>=', $filters['rating']);
+        }
+
+        if (!empty($filters['sort'])) {
+            switch ($filters['sort']) {
+                case 'price_low_high':
+                    $query->orderBy('price', 'asc');
+                    break;
+                case 'price_high_low':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'newest':
+                    $query->latest();
+                    break;
+                case 'best_selling':
+                    $query->withSum('orderItems as total_sold', 'quantity')
+                          ->orderByRaw('is_best_seller DESC')
+                          ->orderBy('total_sold', 'desc');
+                    break;
+                default:
+                    $query->latest();
+                    break;
+            }
+        } else {
+            $query->latest();
         }
 
         return $query->paginate($filters['per_page'] ?? 15);

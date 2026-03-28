@@ -13,7 +13,7 @@ class SettingsService
     public function getSettingsByGroup(string $group): array
     {
         return Cache::rememberForever("settings.group.{$group}", function () use ($group) {
-            $settings = Setting::where('group', $group)->pluck('value', 'key')->toArray();
+            $settings = Setting::where('group', $group)->get()->pluck('value', 'key')->toArray();
             return $settings ?: [];
         });
     }

@@ -11,6 +11,7 @@ use App\Traits\ApiResponseTrait;
 
 /**
  * @group Admin
+ * @subgroup Location
  */
 class ThanaController extends Controller
 {

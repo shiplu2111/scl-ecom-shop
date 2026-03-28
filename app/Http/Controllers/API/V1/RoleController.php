@@ -7,6 +7,7 @@ use App\Services\RoleService;
 
 /**
  * @group Admin
+ * @subgroup Role & Permission
  */
 class RoleController extends BaseController
 {
@@ -15,6 +16,10 @@ class RoleController extends BaseController
     public function __construct(RoleService $roleService)
     {
         $this->roleService = $roleService;
+        $this->middleware('permission:roles_read')->only(['index', 'show']);
+        $this->middleware('permission:roles_create')->only('store');
+        $this->middleware('permission:roles_update')->only('update');
+        $this->middleware('permission:roles_delete')->only('destroy');
     }
 
     public function index()
@@ -55,7 +60,11 @@ class RoleController extends BaseController
 
     public function destroy($id)
     {
-        $this->roleService->deleteRole($id);
-        return $this->successResponse([], 'Role deleted successfully');
+        try {
+            $this->roleService->deleteRole($id);
+            return $this->successResponse([], 'Role deleted successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), null, 422);
+        }
     }
 }

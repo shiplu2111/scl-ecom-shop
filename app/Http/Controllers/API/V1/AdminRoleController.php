@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 /**
  * @group Admin
+ * @subgroup Role & Permission
  */
 class AdminRoleController extends BaseController
 {

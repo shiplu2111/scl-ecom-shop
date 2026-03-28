@@ -7,6 +7,7 @@ use App\Services\PermissionService;
 
 /**
  * @group Admin
+ * @subgroup Role & Permission
  */
 class PermissionController extends BaseController
 {
@@ -15,6 +16,10 @@ class PermissionController extends BaseController
     public function __construct(PermissionService $permissionService)
     {
         $this->permissionService = $permissionService;
+        $this->middleware('permission:roles_read')->only(['index', 'show']);
+        $this->middleware('permission:roles_create')->only('store');
+        $this->middleware('permission:roles_update')->only('update');
+        $this->middleware('permission:roles_delete')->only('destroy');
     }
 
     public function index()

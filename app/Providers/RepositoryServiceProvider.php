@@ -25,6 +25,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(\App\Repositories\WishlistRepositoryInterface::class, \App\Repositories\WishlistRepository::class);
         $this->app->bind(\App\Repositories\CouponRepositoryInterface::class, \App\Repositories\CouponRepository::class);
         $this->app->bind(\App\Repositories\OrderRepositoryInterface::class, \App\Repositories\OrderRepository::class);
+        $this->app->bind(\App\Repositories\TransactionRepositoryInterface::class, \App\Repositories\TransactionRepository::class);
+        $this->app->bind(\App\Repositories\TicketRepositoryInterface::class, \App\Repositories\TicketRepository::class);
     }
 
     /**

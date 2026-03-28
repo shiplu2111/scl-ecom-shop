@@ -29,6 +29,12 @@ class AdminAuthService extends BaseService
             $this->adminRepository->updateDeviceId($admin->id, $deviceId);
         }
 
+        activity()
+            ->performedOn($admin)
+            ->causedBy($admin)
+            ->withProperties(\App\Helpers\DeviceHelper::getDeviceInfo())
+            ->log('login');
+
         return $this->respondWithToken($token);
     }
 
@@ -36,6 +42,12 @@ class AdminAuthService extends BaseService
     {
         $admin = auth('admin')->user();
         if ($admin) {
+            activity()
+                ->performedOn($admin)
+                ->causedBy($admin)
+                ->withProperties(\App\Helpers\DeviceHelper::getDeviceInfo())
+                ->log('logout');
+                
             $this->adminRepository->clearDeviceId($admin->id);
             auth('admin')->logout();
         }
@@ -58,6 +70,7 @@ class AdminAuthService extends BaseService
                 'id' => $admin->id,
                 'name' => $admin->name,
                 'email' => $admin->email,
+                'avatar' => $admin->avatar_url,
                 'roles' => $admin->getRoleNames(),
                 'permissions' => $admin->getAllPermissions()->pluck('name')->toArray()
             ]

@@ -20,7 +20,27 @@ class PermissionService extends BaseService
 
     public function getAllAdminPermissions()
     {
-        return $this->permissionRepository->getAdminPermissions();
+        $permissions = $this->permissionRepository->getAdminPermissions();
+        
+        return $permissions->reject(function ($permission) {
+            return str_starts_with($permission->name, 'dashboard_');
+        })->groupBy(function ($permission) {
+            $parts = explode('_', $permission->name);
+            if (count($parts) > 1) {
+                $lastPart = end($parts);
+                if (in_array($lastPart, ['create', 'read', 'update', 'delete'])) {
+                    array_pop($parts);
+                    return implode('_', $parts);
+                }
+            }
+            
+            // Special cases mapping
+            if (str_contains($permission->name, 'settings')) {
+                return 'settings';
+            }
+            
+            return 'other';
+        });
     }
 
     public function createPermission(array $data)

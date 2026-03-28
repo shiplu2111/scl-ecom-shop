@@ -10,7 +10,8 @@ use App\Http\Resources\UserResource;
 use App\Services\UserService;
 
 /**
- * @group Customer
+ * @group User
+ * @subgroup Profile
  */
 class UserController extends BaseController
 {

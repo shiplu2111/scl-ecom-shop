@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 
 /**
  * @group Admin
+ * @subgroup Blog Management
  */
 class BlogController extends Controller
 {

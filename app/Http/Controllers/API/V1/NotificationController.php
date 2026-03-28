@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 /**
- * @group Customer
+ * @group User
+ * @subgroup Notifications
  */
 class NotificationController extends Controller
 {

@@ -8,6 +8,7 @@ use Spatie\Activitylog\Models\Activity;
 
 /**
  * @group Admin
+ * @subgroup Activity Logs
  */
 class ActivityLogController extends Controller
 {
@@ -40,6 +41,23 @@ class ActivityLogController extends Controller
 
         if ($request->has('date_to')) {
             $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('description', 'like', "%{$search}%")
+                  ->orWhere('log_name', 'like', "%{$search}%")
+                  ->orWhere('event', 'like', "%{$search}%")
+                  ->orWhere('properties->ip', 'like', "%{$search}%")
+                  ->orWhere('properties->device', 'like', "%{$search}%")
+                  ->orWhere('properties->platform', 'like', "%{$search}%")
+                  ->orWhere('subject_type', 'like', "%{$search}%")
+                  ->orWhereHasMorph('causer', ['App\Models\Admin', 'App\Models\User'], function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
         }
 
         $logs = $query->paginate($request->get('per_page', 20));

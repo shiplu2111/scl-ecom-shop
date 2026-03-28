@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 
 /**
  * @group Public
+ * @subgroup Misc
  */
 class SitemapController extends Controller
 {

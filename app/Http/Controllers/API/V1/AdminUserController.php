@@ -9,12 +9,17 @@ use Illuminate\Http\Request;
 
 /**
  * @group Admin
+ * @subgroup User Management
  */
 class AdminUserController extends BaseController
 {
     public function index()
     {
-        $admins = Admin::with('roles')->get();
+        $admins = Admin::with('roles')
+            ->whereDoesntHave('roles', function ($query) {
+                $query->where('name', 'super_admin');
+            })
+            ->get();
         return $this->successResponse($admins, 'Admins retrieved successfully');
     }
 

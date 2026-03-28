@@ -13,9 +13,34 @@ class CouponService extends BaseService
         $this->couponRepository = $couponRepository;
     }
 
+    public function all()
+    {
+        return $this->couponRepository->all();
+    }
+
+    public function find(int $id)
+    {
+        return $this->couponRepository->find($id);
+    }
+
+    public function createCoupon(array $data)
+    {
+        return $this->couponRepository->create($data);
+    }
+
+    public function updateCoupon(int $id, array $data)
+    {
+        return $this->couponRepository->update($id, $data);
+    }
+
+    public function deleteCoupon(int $id)
+    {
+        return $this->couponRepository->delete($id);
+    }
+
     public function getCouponByCode(string $code)
     {
-        return $this->couponRepository->model->where('code', $code)->first();
+        return $this->couponRepository->getModel()->where('code', $code)->first();
     }
 
     public function validateForCart($coupon, float $cartSubtotal)

@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Location\StoreDistrictRequest;
 use App\Http\Requests\Admin\Location\UpdateDistrictRequest;
 use App\Http\Resources\Location\DistrictResource;
+use App\Http\Resources\Location\ThanaResource;
 use App\Services\Location\LocationService;
 use App\Traits\ApiResponseTrait;
 
 /**
  * @group Admin
+ * @subgroup Location
  */
 class DistrictController extends Controller
 {
@@ -49,9 +51,19 @@ class DistrictController extends Controller
         return $this->successResponse(new DistrictResource($district), 'District updated successfully');
     }
 
+    public function thanas($id)
+    {
+        $thanas = $this->locationService->getAllThanas($id);
+        return $this->successResponse(ThanaResource::collection($thanas), 'Thanas for district retrieved successfully');
+    }
+
     public function destroy($id)
     {
-        $this->locationService->deleteDistrict($id);
-        return $this->successResponse([], 'District deleted successfully');
+        try {
+            $this->locationService->deleteDistrict($id);
+            return $this->successResponse([], 'District deleted successfully');
+        } catch (\RuntimeException $e) {
+            return $this->errorResponse($e->getMessage(), 400);
+        }
     }
 }

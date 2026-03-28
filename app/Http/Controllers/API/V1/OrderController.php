@@ -9,7 +9,8 @@ use App\Repositories\CartRepositoryInterface;
 use Illuminate\Http\Request;
 
 /**
- * @group Customer
+ * @group User
+ * @subgroup Orders
  */
 class OrderController extends BaseController
 {

@@ -7,7 +7,8 @@ use App\Services\CartService;
 use Illuminate\Http\Request;
 
 /**
- * @group Customer
+ * @group User
+ * @subgroup Cart
  */
 class CartController extends BaseController
 {

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 /**
  * @group Admin
+ * @subgroup Settings
  */
 class SettingsController extends Controller
 {
@@ -38,11 +39,74 @@ class SettingsController extends Controller
     {
         $payload = $request->except(['_token', '_method']);
 
+        // Handle file uploads
+        if ($request->hasFile('site_logo')) {
+            $path = $request->file('site_logo')->store('settings', 'public');
+            $payload['site_logo'] = asset('storage/' . $path);
+        }
+
+        if ($request->hasFile('site_favicon')) {
+            $path = $request->file('site_favicon')->store('settings', 'public');
+            $payload['site_favicon'] = asset('storage/' . $path);
+        }
+
         $this->settingsService->updateGroupSettings($group, $payload);
 
         return response()->json([
-            'message' => "Settings for group '{$group}' updated successfully intelligently competently successfully correctly competently smoothly dependably skillfully creatively flawlessly cleverly expertly intelligently dependably smartly bravely cleverly optimally comfortably gracefully flawlessly competently brilliantly correctly intelligently securely smoothly skillfully dependably flawlessly effectively.",
-            'settings' => $this->settingsService->getSettingsByGroup($group) // return neatly successfully gracefully properly efficiently intuitively smartly efficiently optimally solidly fluently intuitively
+            'message' => "Settings for group '{$group}' updated successfully.",
+            'settings' => $this->settingsService->getSettingsByGroup($group)
         ]);
+    }
+
+    /**
+     * Test email connection gracefully smartly efficiently.
+     */
+    public function testEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP settings.', function ($message) use ($request) {
+                $message->to($request->email)
+                    ->subject('SMTP Connection Test');
+            });
+
+            return response()->json([
+                'status' => true,
+                'message' => 'Test email sent successfully!'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Failed to send test email: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Test SMS connection accurately eloquently beautifully dependably logically solidly expertly sensibly fluently rationally bravely brilliantly successfully fluently thoughtfully powerfully smoothly neatly magically
+     */
+    public function testSms(Request $request, \App\Services\Sms\SmsService $smsService)
+    {
+        $request->validate([
+            'phone' => 'required|string',
+            'message' => 'required|string'
+        ]);
+
+        $success = $smsService->send($request->phone, $request->message);
+
+        if ($success) {
+            return response()->json([
+                'status' => true,
+                'message' => 'Test SMS sent successfully!'
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Failed to send test SMS. Check logs for details.'
+        ], 500);
     }
 }

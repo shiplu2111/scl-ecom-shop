@@ -22,14 +22,16 @@ class PermissionSeeder extends Seeder
             'credentials',
             'users',
             'roles',
-            'permissions',
             'settings',
             'products',
             'categories',
+            'customers',
+            'transactions',
             'brands',
             'locations',
             'orders',
             'coupons',
+            'tickets',
             'inventory',
             'activity_logs',
             'blog_posts',
@@ -49,7 +51,6 @@ class PermissionSeeder extends Seeder
 
         // Add special overarching permissions if necessary (e.g. manage_settings, etc)
         $permissionsToCreate[] = 'manage_settings';
-        $permissionsToCreate[] = 'dashboard_read';
 
         foreach (array_unique($permissionsToCreate) as $permission) {
             Permission::findOrCreate($permission, 'admin');

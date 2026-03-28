@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 /**
  * @group Public
+ * @subgroup Auth
  */
 class OtpController extends BaseController
 {

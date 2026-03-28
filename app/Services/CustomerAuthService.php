@@ -57,6 +57,12 @@ class CustomerAuthService extends BaseService
             $this->userRepository->updateDeviceId($user->id, $deviceId);
         }
 
+        activity()
+            ->performedOn($user)
+            ->causedBy($user)
+            ->withProperties(\App\Helpers\DeviceHelper::getDeviceInfo())
+            ->log('login');
+
         return $this->respondWithToken($token);
     }
 
@@ -80,6 +86,12 @@ class CustomerAuthService extends BaseService
     {
         $user = auth('api')->user();
         if ($user) {
+            activity()
+                ->performedOn($user)
+                ->causedBy($user)
+                ->withProperties(\App\Helpers\DeviceHelper::getDeviceInfo())
+                ->log('logout');
+
             $this->userRepository->clearDeviceId($user->id);
             auth('api')->logout();
         }

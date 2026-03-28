@@ -18,7 +18,7 @@ class SendOtpJob implements ShouldQueue
         $this->otpRecord = $otpRecord;
     }
 
-    public function handle(): void
+    public function handle(\App\Services\Sms\SmsService $smsService): void
     {
         $identity = $this->otpRecord->identity;
         $otp = $this->otpRecord->otp;
@@ -28,8 +28,8 @@ class SendOtpJob implements ShouldQueue
             // Mail::to($identity)->send(new OtpMail($otp));
             Log::info("DISPATCHING OTP EMAIL TO [{$identity}]: {$otp}");
         } else {
-            // Placeholder: Fire generic SMS Gateway integration mapping
-            Log::info("DISPATCHING OTP SMS TO [{$identity}]: {$otp}");
+            $message = "Your OTP for registration is: {$otp}. Please do not share it with anyone.";
+            $smsService->send($identity, $message);
         }
     }
 }

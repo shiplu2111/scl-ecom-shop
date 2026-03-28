@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 
 /**
  * @group Public
+ * @subgroup Blog
  */
 class BlogController extends Controller
 {
