@@ -240,9 +240,14 @@ Route::prefix('v1')->group(function () {
                 Route::delete('/tags/{id}', [\App\Http\Controllers\API\V1\Admin\BlogController::class, 'deleteTag'])->middleware('permission:blog_tags_delete');
 
                 Route::get('/posts', [\App\Http\Controllers\API\V1\Admin\BlogController::class, 'getPosts'])->middleware('permission:blog_posts_read');
+                Route::get('/posts/{id}', [\App\Http\Controllers\API\V1\Admin\BlogController::class, 'show'])->middleware('permission:blog_posts_read');
                 Route::post('/posts', [\App\Http\Controllers\API\V1\Admin\BlogController::class, 'createPost'])->middleware('permission:blog_posts_create');
                 Route::put('/posts/{id}', [\App\Http\Controllers\API\V1\Admin\BlogController::class, 'updatePost'])->middleware('permission:blog_posts_update');
                 Route::delete('/posts/{id}', [\App\Http\Controllers\API\V1\Admin\BlogController::class, 'deletePost'])->middleware('permission:blog_posts_delete');
+
+                Route::get('/comments', [\App\Http\Controllers\API\V1\Admin\BlogCommentController::class, 'index'])->middleware('permission:blog_posts_read');
+                Route::put('/comments/{id}/status', [\App\Http\Controllers\API\V1\Admin\BlogCommentController::class, 'updateStatus'])->middleware('permission:blog_posts_update');
+                Route::delete('/comments/{id}', [\App\Http\Controllers\API\V1\Admin\BlogCommentController::class, 'destroy'])->middleware('permission:blog_posts_delete');
             });
 
             Route::get('/pages', [\App\Http\Controllers\API\V1\Admin\PageController::class, 'index'])->middleware('permission:pages_read');
@@ -277,5 +282,6 @@ Route::prefix('v1')->group(function () {
     Route::get('/blog/tags', [\App\Http\Controllers\API\V1\BlogController::class, 'getTags']);
     Route::get('/blog/posts', [\App\Http\Controllers\API\V1\BlogController::class, 'getPosts']);
     Route::get('/blog/posts/{slug}', [\App\Http\Controllers\API\V1\BlogController::class, 'showPost']);
+    Route::post('/blog/posts/{slug}/comments', [\App\Http\Controllers\API\V1\BlogController::class, 'storeComment'])->middleware(['auth:api', 'user.active']);
     Route::get('/pages/{slug}', [\App\Http\Controllers\API\V1\PageController::class, 'show']);
 });

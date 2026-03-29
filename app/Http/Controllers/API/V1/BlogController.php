@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogCategory;
 use App\Models\BlogPost;
 use App\Models\BlogTag;
+use App\Models\BlogComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -58,13 +59,34 @@ class BlogController extends Controller
 
     public function showPost($slug)
     {
-        $post = Cache::rememberForever('blog.post.' . $slug, function () use ($slug) {
-            return BlogPost::with(['category', 'tags', 'author'])
-                ->where('status', 'published')
-                ->where('slug', $slug)
-                ->firstOrFail();
-        });
+        $post = BlogPost::with(['category', 'tags', 'author'])
+            ->with(['comments' => function ($query) {
+                $query->where('status', 'approved')->whereNull('parent_id')->with('replies', 'user');
+            }])
+            ->where('status', 'published')
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         return response()->json($post);
+    }
+
+    public function storeComment(Request $request, $slug)
+    {
+        $request->validate([
+            'content' => 'required|string|max:1000',
+            'parent_id' => 'nullable|exists:blog_comments,id'
+        ]);
+
+        $post = BlogPost::where('slug', $slug)->firstOrFail();
+
+        $comment = BlogComment::create([
+            'user_id' => auth()->id(),
+            'blog_post_id' => $post->id(),
+            'parent_id' => $request->parent_id,
+            'content' => $request->content,
+            'status' => 'pending' // Requires moderation
+        ]);
+
+        return response()->json($comment->load('user'), 201);
     }
 }
