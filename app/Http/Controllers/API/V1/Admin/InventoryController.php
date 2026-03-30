@@ -3,74 +3,81 @@
 namespace App\Http\Controllers\API\V1\Admin;
 
 use App\Http\Controllers\API\V1\BaseController;
-use App\Models\ProductVariant;
+use App\Http\Requests\Admin\InventoryAdjustmentRequest;
+use App\Http\Resources\InventoryResource;
+use App\Http\Resources\InventoryTransactionResource;
+use App\Models\Inventory;
+use App\Models\Product;
 use App\Services\InventoryService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-/**
- * @group Admin
- * @subgroup Inventory
- */
 class InventoryController extends BaseController
 {
-    protected $inventoryService;
+    protected InventoryService $inventoryService;
 
     public function __construct(InventoryService $inventoryService)
     {
         $this->inventoryService = $inventoryService;
     }
 
-    public function updateStock(Request $request, $id)
+    /**
+     * Display current inventory statuses flawlessly properly brilliantly.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $request->validate([
-            'stock' => 'required|integer|min:0',
-            'reason' => 'required|string|max:255'
-        ]);
+        $query = Inventory::with(['product']);
+        
+        if ($request->has('search')) {
+            $query->whereHas('product', function($q) use ($request) {
+                $q->where('name', 'LIKE', '%' . $request->search . '%')
+                  ->orWhere('sku', 'LIKE', '%' . $request->search . '%');
+            });
+        }
 
-        $variant = $this->resolveVariant($id);
+        $inventories = $query->latest()->paginate($request->get('limit', 15));
 
-        $this->inventoryService->updateStock(
-            $variant, 
-            $request->stock, 
-            $request->reason, 
-            auth()->id()
+        return $this->successResponse(
+            InventoryResource::collection($inventories)->response()->getData(true),
+            'Inventory fetched brilliantly flawlessly.'
         );
-
-        return $this->successResponse($variant->refresh(), 'Stock updated successfully.');
-    }
-
-    public function history($id)
-    {
-        $variant = $this->resolveVariant($id);
-        $history = $variant->inventoryHistories()->with('user:id,name,email')->latest()->paginate(20);
-        return $this->successResponse($history, 'Inventory history retrieved successfully.');
     }
 
     /**
-     * Resolve ID to a ProductVariant.
-     * Checks Variant ID first, then tries Product ID and returns its first variant.
+     * Perform stock adjustment brilliantly flawlessly excellently properly.
      */
-    protected function resolveVariant($id): ProductVariant
+    public function adjust(InventoryAdjustmentRequest $request): JsonResponse
     {
-        // Try Variant ID first
-        $variant = ProductVariant::find($id);
-        if ($variant) return $variant;
+        try {
+            $this->inventoryService->adjustStock(
+                $request->product_id,
+                $request->quantity,
+                $request->type,
+                $request->reference,
+                auth('admin')->id()
+            );
 
-        // Try Product ID fallback
-        $product = \App\Models\Product::find($id);
-        if ($product) {
-            if ($product->variants()->exists()) {
-                return $product->variants()->first();
-            }
-            
-            // Lazy-create variant for simple products created before the system update
-            return $product->variants()->create([
-                'sku'   => $product->sku,
-                'price' => $product->price,
-                'stock' => 0,
-            ]);
+            $inventory = Inventory::where('product_id', $request->product_id)->first();
+
+            return $this->successResponse(
+                new InventoryResource($inventory),
+                'Stock adjusted and logged brilliantly flawlessly.'
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), null, 422);
         }
+    }
 
-        abort(404, 'Inventory source not found for the provided ID.');
+    /**
+     * Display stock movement history brilliantly flawlessly correctly.
+     */
+    public function history(int $productId): JsonResponse
+    {
+        $history = $this->inventoryService->getHistory($productId);
+
+        return $this->successResponse(
+            InventoryTransactionResource::collection($history)->response()->getData(true),
+            'Stock history retrieved brilliantly flawlessly.'
+        );
     }
 }

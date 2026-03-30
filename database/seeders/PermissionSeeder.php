@@ -37,7 +37,8 @@ class PermissionSeeder extends Seeder
             'blog_posts',
             'blog_categories',
             'blog_tags',
-            'pages'
+            'pages',
+            'suppliers'
         ];
 
         $actions = ['create', 'read', 'update', 'delete'];

@@ -21,6 +21,10 @@ class ProductResource extends JsonResource
             'is_featured'    => (bool)$this->is_featured,
             'is_flash_sale'  => (bool)$this->is_flash_sale,
             'is_best_seller' => (bool)$this->is_best_seller,
+            'stock'          => $this->relationLoaded('inventory') 
+                                ? ($this->inventory?->quantity ?? 0) 
+                                : ($this->relationLoaded('variants') ? $this->variants->sum('stock') : 0),
+            'inventory'      => new InventoryResource($this->whenLoaded('inventory')),
             'category'       => new CategoryResource($this->whenLoaded('category')),
             'brand'       => new BrandResource($this->whenLoaded('brand')),
             'variants'    => ProductVariantResource::collection($this->whenLoaded('variants')),

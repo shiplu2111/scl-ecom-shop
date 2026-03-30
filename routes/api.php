@@ -206,9 +206,14 @@ Route::prefix('v1')->group(function () {
             Route::post('/orders/{order}/dispatch', [\App\Http\Controllers\API\V1\Admin\CourierController::class, 'dispatchOrder'])->middleware('permission:orders_update');
             Route::get('/orders/{order}/track', [\App\Http\Controllers\API\V1\Admin\CourierController::class, 'trackOrder'])->middleware('permission:orders_read');
 
+            // Admin Supplier Management
+            Route::apiResource('/suppliers', \App\Http\Controllers\API\V1\Admin\SupplierController::class)->middleware('permission:suppliers_read|suppliers_create|suppliers_update|suppliers_delete');
+            Route::post('/suppliers/{id}/attach-products', [\App\Http\Controllers\API\V1\Admin\SupplierController::class, 'attachProducts'])->middleware('permission:suppliers_update');
+
             // Admin Inventory Management
-            Route::put('/variants/{id}/stock', [\App\Http\Controllers\API\V1\Admin\InventoryController::class, 'updateStock'])->middleware('permission:inventory_update');
-            Route::get('/variants/{id}/inventory-history', [\App\Http\Controllers\API\V1\Admin\InventoryController::class, 'history'])->middleware('permission:inventory_read');
+            Route::get('/inventory', [\App\Http\Controllers\API\V1\Admin\InventoryController::class, 'index'])->middleware('permission:inventory_read');
+            Route::post('/inventory/adjust', [\App\Http\Controllers\API\V1\Admin\InventoryController::class, 'adjust'])->middleware('permission:inventory_update');
+            Route::get('/inventory/{productId}/history', [\App\Http\Controllers\API\V1\Admin\InventoryController::class, 'history'])->middleware('permission:inventory_read');
 
             // Admin Settings
             Route::get('/settings/{group}', [\App\Http\Controllers\API\V1\Admin\SettingsController::class, 'getByGroup'])->middleware('permission:manage_settings');

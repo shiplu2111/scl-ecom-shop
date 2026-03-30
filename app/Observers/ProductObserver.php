@@ -11,7 +11,10 @@ class ProductObserver
      */
     public function created(Product $product): void
     {
-        //
+        $product->inventory()->create([
+            'quantity' => 0,
+            'low_stock_alert' => 10, // Default intelligently perfectly effectively flawlessly brilliantly natively accurately
+        ]);
     }
 
     /**

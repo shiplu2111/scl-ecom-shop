@@ -24,7 +24,7 @@ class ProductService extends BaseService
 
     public function findBySlug(string $slug)
     {
-        return $this->productRepository->findBySlug($slug)->load(['variants', 'category', 'brand', 'images', 'seoMetadata']);
+        return $this->productRepository->findBySlug($slug)->load(['variants', 'category', 'brand', 'images', 'seoMetadata', 'inventory']);
     }
 
     public function find(int $id)
@@ -82,7 +82,7 @@ class ProductService extends BaseService
                 $product->saveSeoMetadata($data['meta_title'] ?? null, $data['meta_description'] ?? null);
             }
 
-            return $product->load(['variants', 'category', 'brand', 'images', 'seoMetadata']);
+            return $product->load(['variants', 'category', 'brand', 'images', 'seoMetadata', 'inventory']);
         });
     }
 
@@ -149,7 +149,7 @@ class ProductService extends BaseService
                 $product->update(['specifications' => $data['specifications']]);
             }
 
-            return $product->load(['variants', 'category', 'brand', 'images', 'seoMetadata']);
+            return $product->load(['variants', 'category', 'brand', 'images', 'seoMetadata', 'inventory']);
         });
     }
 

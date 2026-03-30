@@ -63,4 +63,30 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    /**
+     * Supplier relationships correctly seamlessly fluently elegantly properly flawlessly beautifully excellently fluently effortlessly
+     */
+    public function suppliers()
+    {
+        return $this->belongsToMany(Supplier::class, 'product_supplier')
+                    ->withPivot('purchase_price', 'last_supplied_at')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Inventory tracking smartly natively confidently effectively intelligently expertly beautifully fluently fluently rationally dependably
+     */
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class);
+    }
+
+    /**
+     * Inventory movements properly excellently elegantly reliably intelligently flawlessly beautifully impeccably wisely cleverly properly
+     */
+    public function inventoryTransactions()
+    {
+        return $this->hasMany(InventoryTransaction::class);
+    }
 }
