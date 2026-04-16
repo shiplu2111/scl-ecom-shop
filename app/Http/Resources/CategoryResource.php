@@ -15,6 +15,7 @@ class CategoryResource extends JsonResource
             'name'  => $this->name,
             'slug'  => $this->slug,
             'image' => $this->image ? url('storage/' . $this->image) : null,
+            'children_count' => $this->children()->count(),
             'children' => CategoryResource::collection($this->whenLoaded('children')),
             'parent' => new CategoryResource($this->whenLoaded('parent')),
             'seo_metadata' => new SeoMetadataResource($this->whenLoaded('seoMetadata')),

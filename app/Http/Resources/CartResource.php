@@ -12,7 +12,7 @@ class CartResource extends JsonResource
         $subtotal = 0;
         
         foreach ($this->items as $item) {
-            $price = $item->productVariant ? $item->productVariant->price : $item->product->price;
+            $price = $item->getResolvedPrice();
             $subtotal += ($price * $item->quantity);
         }
 

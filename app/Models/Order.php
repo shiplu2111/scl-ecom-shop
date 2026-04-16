@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-#[Fillable(['user_id', 'order_number', 'subtotal', 'discount_amount', 'delivery_charge', 'grand_total', 'payment_method', 'payment_status', 'order_status', 'shipping_address_id', 'billing_address_id', 'coupon_id', 'delivery_charge_paid', 'paid_amount', 'due_amount', 'courier_name', 'tracking_number', 'consignment_id'])]
+#[Fillable(['user_id', 'order_number', 'subtotal', 'discount_amount', 'delivery_charge', 'grand_total', 'payment_method', 'payment_status', 'order_status', 'shipping_address_id', 'billing_address_id', 'shipping_full_name', 'shipping_phone', 'shipping_email', 'shipping_address_line', 'shipping_postal_code', 'shipping_division_id', 'shipping_district_id', 'shipping_thana_id', 'coupon_id', 'delivery_charge_paid', 'paid_amount', 'due_amount', 'courier_name', 'tracking_number', 'consignment_id', 'is_stock_reduced'])]
 class Order extends Model
 {
     use LogsActivity;
@@ -43,5 +43,10 @@ class Order extends Model
     public function transactions()
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function histories()
+    {
+        return $this->hasMany(OrderHistory::class);
     }
 }

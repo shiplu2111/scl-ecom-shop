@@ -13,11 +13,17 @@ class WishlistService extends BaseService
         $this->wishlistRepository = $wishlistRepository;
     }
 
-    public function toggleWishlist(int $userId, int $productId)
+    public function toggleWishlist(?int $userId, int $productId, ?string $sessionId = null, ?int $productVariantId = null)
     {
-        $exists = $this->wishlistRepository->model->where('user_id', $userId)
-                                                  ->where('product_id', $productId)
-                                                  ->first();
+        $query = $this->wishlistRepository->getModel()->where('product_id', $productId);
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        } else {
+            $query->where('session_id', $sessionId);
+        }
+
+        $exists = $query->first();
 
         if ($exists) {
             $exists->delete();
@@ -26,7 +32,9 @@ class WishlistService extends BaseService
 
         $this->wishlistRepository->create([
             'user_id' => $userId,
-            'product_id' => $productId
+            'session_id' => $sessionId,
+            'product_id' => $productId,
+            'product_variant_id' => $productVariantId
         ]);
         
         return ['status' => 'added'];

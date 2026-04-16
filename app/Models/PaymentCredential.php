@@ -11,12 +11,9 @@ class PaymentCredential extends Model
 
     protected $fillable = [
         'name',
+        'base_url',
         'environment',
-        'merchant_id',
         'secret_key',
-        'callback_url',
-        'success_url',
-        'cancel_url',
         'is_active',
     ];
 

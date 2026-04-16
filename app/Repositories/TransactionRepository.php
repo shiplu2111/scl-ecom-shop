@@ -27,6 +27,14 @@ class TransactionRepository extends BaseRepository implements TransactionReposit
             $query->where('gateway', $filters['gateway']);
         }
 
+        if (!empty($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        if (!empty($filters['user_id'])) {
+            $query->where('user_id', $filters['user_id']);
+        }
+
         if (!empty($filters['transaction_id'])) {
             $query->where('transaction_id', 'like', "%{$filters['transaction_id']}%");
         }

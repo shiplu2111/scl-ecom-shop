@@ -24,6 +24,13 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             LocationSeeder::class,
+            CategorySeeder::class,
+            BrandSeeder::class,
+            AdminSeeder::class,
+            CourierCredentialSeeder::class,
+            PaymentCredentialSeeder::class,
+            FooterSettingSeeder::class,
+            PermissionSeeder::class,
         ]);
     }
 }

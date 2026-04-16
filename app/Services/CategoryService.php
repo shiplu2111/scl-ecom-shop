@@ -22,12 +22,22 @@ class CategoryService extends BaseService
 
     public function fetchTree()
     {
-        return $this->categoryRepository->all()->where('parent_id', null)->load('children');
+        return \App\Models\Category::whereNull('parent_id')->with('children')->get();
     }
 
     public function fetchPublic()
     {
         return $this->fetchTree();
+    }
+
+    public function fetchRootCategories()
+    {
+        return \App\Models\Category::whereNull('parent_id')->with('children')->get();
+    }
+
+    public function fetchSubCategories(int $parentId)
+    {
+        return $this->categoryRepository->all()->where('parent_id', $parentId);
     }
 
     public function find(int $id)
@@ -37,7 +47,7 @@ class CategoryService extends BaseService
 
     public function findBySlug(string $slug)
     {
-        return $this->categoryRepository->all()->where('slug', $slug)->first()?->load('seoMetadata');
+        return $this->categoryRepository->all()->where('slug', $slug)->first()?->load(['seoMetadata', 'parent']);
     }
 
     public function createCategory(array $data)

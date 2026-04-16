@@ -14,7 +14,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
-#[Fillable(['name', 'email', 'phone', 'password', 'device_id', 'avatar', 'is_active'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'device_id', 'avatar', 'is_active', 'provider', 'provider_id'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements JWTSubject
 {

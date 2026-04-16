@@ -16,7 +16,7 @@ class UddoktaPayService
         return $cred;
     }
 
-    public function createPayment($order)
+    public function initiatePayment($order)
     {
         $credentials = $this->getCredentials();
         

@@ -41,12 +41,15 @@ class NewsletterMail extends Mailable
      */
     public function content(): Content
     {
+        $siteSettings = \App\Models\Setting::where('group', 'site')->pluck('value', 'key')->toArray();
+
         return new Content(
             view: 'emails.newsletter',
             with: [
                 'subject' => $this->emailSubject,
                 'content' => $this->content,
                 'unsubscribe_url' => $this->unsubscribe_url,
+                'site_settings' => $siteSettings
             ],
         );
     }

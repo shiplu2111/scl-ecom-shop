@@ -14,13 +14,16 @@ class InventoryTransactionResource extends JsonResource
     {
         return [
             'id'              => $this->id,
-            'product_id'      => $this->product_id,
+            'sku'             => $this->sku,
+            'purchase_id'     => $this->purchase_id,
+            'purchase_no'     => $this->purchase?->purchase_no,
             'type'            => $this->type,
             'quantity'        => $this->quantity,
             'reference'       => $this->reference,
             'created_by'      => $this->created_by,
             'created_by_name' => $this->creator?->name ?? 'System',
             'creator'         => $this->whenLoaded('creator'),
+            'purchase'        => $this->whenLoaded('purchase'),
             'created_at'      => $this->created_at->toDateTimeString(),
         ];
     }

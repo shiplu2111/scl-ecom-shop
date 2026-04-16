@@ -29,5 +29,6 @@ class CourierCredentialSeeder extends Seeder
             'account_id' => 'sandbox_pathao_account',
             'is_active' => true,
         ]);
+         $this->command->info('Courier credentials seeded successfully!');
     }
 }

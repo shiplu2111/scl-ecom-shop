@@ -13,9 +13,11 @@ return new class extends Migration
     {
         Schema::create('inventories', function (Blueprint $row) {
             $row->id();
-            $row->foreignId('product_id')->unique()->constrained()->onDelete('cascade');
+            $row->string('sku')->unique();
+            $row->foreignId('supplier_id')->nullable()->constrained()->onDelete('set null');
+            $row->decimal('buying_price', 15, 2)->nullable();
             $row->integer('quantity')->default(0);
-            $row->integer('low_stock_alert')->nullable();
+            $row->integer('alert_quantity')->default(5);
             $row->timestamps();
             
             // Index for stock queries
@@ -24,7 +26,7 @@ return new class extends Migration
 
         Schema::create('inventory_transactions', function (Blueprint $row) {
             $row->id();
-            $row->foreignId('product_id')->constrained()->onDelete('cascade');
+            $row->string('sku')->index();
             $row->enum('type', ['IN', 'OUT', 'ADJUSTMENT']);
             $row->integer('quantity');
             $row->string('reference')->nullable();
@@ -33,7 +35,7 @@ return new class extends Migration
             
             // Indexes for transaction history and audits
             $row->index('type');
-            $row->index(['product_id', 'type']);
+            $row->index(['sku', 'type']);
             $row->index('created_at');
         });
     }

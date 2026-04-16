@@ -5,10 +5,26 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
-#[Fillable(['order_id', 'product_id', 'product_variant_id', 'quantity', 'unit_price', 'buying_price', 'total_price'])]
+#[Fillable([
+    'order_id', 
+    'product_id', 
+    'product_variant_id', 
+    'product_name', 
+    'variant_name', 
+    'sku', 
+    'quantity', 
+    'unit_price', 
+    'buying_price', 
+    'total_price'
+])]
 class OrderItem extends Model
 {
-    protected $hidden = ['buying_price'];
+    /**
+     * The attributes that should be hidden for serialization.
+     * Hidden by default, but exposed manually in resources when needed.
+     */
+    protected $hidden = [];
+
     public function order()
     {
         return $this->belongsTo(Order::class);

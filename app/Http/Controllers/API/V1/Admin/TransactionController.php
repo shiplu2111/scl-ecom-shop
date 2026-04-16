@@ -39,4 +39,25 @@ class TransactionController extends BaseController
 
         return $this->successResponse(new TransactionResource($transaction), 'Transaction details fetched successfully');
     }
+
+    /**
+     * Store a manual transaction (e.g., for COD).
+     */
+    public function store(Request $request)
+    {
+        $request->validate([
+            'order_id'       => 'required|exists:orders,id',
+            'amount'         => 'required|numeric|min:0',
+            'gateway'        => 'nullable|string|max:50',
+            'transaction_id' => 'nullable|string|max:100',
+            'note'           => 'nullable|string|max:255',
+        ]);
+
+        try {
+            $transaction = $this->transactionService->createManual($request->all());
+            return $this->successResponse(new TransactionResource($transaction), 'Manual transaction recorded successfully', 201);
+        } catch (\Exception $e) {
+            return $this->errorResponse('Failed to record transaction: ' . $e->getMessage(), 500);
+        }
+    }
 }

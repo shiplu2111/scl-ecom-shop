@@ -10,16 +10,22 @@ class InventoryTransaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
+        'sku',
+        'purchase_id',
         'type',
         'quantity',
         'reference',
         'created_by'
     ];
 
-    public function product()
+    public function purchase()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Purchase::class);
+    }
+
+    public function inventory()
+    {
+        return $this->belongsTo(Inventory::class, 'sku', 'sku');
     }
 
     public function creator()

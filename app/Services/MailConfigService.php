@@ -14,7 +14,7 @@ class MailConfigService
     }
 
     /**
-     * Apply settings dependably expertly intelligently beautifully accurately eloquently beautifully dependably logically solidly expertly sensibly fluently rationally bravely brilliantly successfully fluently thoughtfully powerfully smoothly neatly magically
+     * Apply settings to the mail configuration.
      */
     public function apply()
     {

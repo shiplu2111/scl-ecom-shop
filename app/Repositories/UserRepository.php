@@ -51,4 +51,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         return $this->model->where('id', $userId)->update(['device_id' => null]);
     }
+
+    public function findByProvider(string $provider, string $providerId)
+    {
+        return $this->model->where('provider', $provider)
+            ->where('provider_id', $providerId)
+            ->first();
+    }
 }

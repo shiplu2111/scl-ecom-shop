@@ -14,12 +14,29 @@ trait ApiResponseTrait
      */
     protected function successResponse($data = [], string $message = 'Success', int $code = 200)
     {
-        return response()->json([
+        $response = [
             'status' => true,
             'message' => $message,
             'data' => $data,
             'errors' => null
-        ], $code);
+        ];
+
+        if ($data instanceof \Illuminate\Http\Resources\Json\ResourceCollection) {
+            $resource = $data->resource;
+            if ($resource instanceof \Illuminate\Pagination\AbstractPaginator || $resource instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+                $paginated = $data->response()->getData(true);
+                $response['data'] = $paginated['data'];
+                $response['links'] = $paginated['links'] ?? null;
+                $response['meta'] = $paginated['meta'] ?? null;
+            }
+        } elseif ($data instanceof \Illuminate\Pagination\AbstractPaginator || $data instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $paginated = $data->toArray();
+            $response['data'] = $paginated['data'];
+            unset($paginated['data']);
+            $response['meta'] = $paginated;
+        }
+
+        return response()->json($response, $code);
     }
 
     /**

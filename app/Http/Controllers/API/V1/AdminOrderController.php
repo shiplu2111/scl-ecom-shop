@@ -19,9 +19,14 @@ class AdminOrderController extends BaseController
         $this->orderService = $orderService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $orders = $this->orderService->fetchAllOrders();
+        $filters = [
+            'status' => $request->query('status'),
+            'search' => $request->query('search'),
+        ];
+        
+        $orders = $this->orderService->fetchAllOrders($request->input('per_page', 15), $filters);
         return $this->successResponse(OrderResource::collection($orders), 'Orders fetched successfully');
     }
 
@@ -36,7 +41,7 @@ class AdminOrderController extends BaseController
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled'
+            'status' => 'required|in:pending,confirmed,processing,shipped,delivered,cancelled,returned'
         ]);
 
         $order = $this->orderService->find($id);

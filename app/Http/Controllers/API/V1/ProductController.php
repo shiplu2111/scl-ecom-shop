@@ -25,7 +25,10 @@ class ProductController extends BaseController
     public function index(Request $request)
     {
         $filters = $request->only([
-            'search', 'category_id', 'brand_id', 'min_price', 'max_price', 'per_page'
+            'search', 'category_id', 'category_slug', 'categories', 'brand_id', 'brand_slug', 'brands',
+            'min_price', 'max_price', 'per_page', 'page',
+            'sort', 'colors', 'sizes',
+            'is_featured', 'is_best_seller', 'is_flash_sale', 'special_offers'
         ]);
 
         $products = $this->productService->fetchFiltered($filters);
@@ -48,5 +51,14 @@ class ProductController extends BaseController
         }
 
         return $this->successResponse(new ProductResource($product), 'Product details fetched successfully');
+    }
+
+    /**
+     * Public Endpoint: Get all unique filter options (colors, sizes, brands, etc.)
+     */
+    public function filters()
+    {
+        $filters = $this->productService->getFilterOptions();
+        return $this->successResponse($filters, 'Filter options retrieved successfully');
     }
 }

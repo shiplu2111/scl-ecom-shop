@@ -60,6 +60,22 @@ class AuthController extends BaseController
         return $this->successResponse($this->authService->me(), 'User profile retrieved successfully');
     }
 
+    public function checkExists(Request $request)
+    {
+        $request->validate([
+            'email' => 'nullable|email',
+            'phone' => 'nullable|string',
+        ]);
+
+        $query = \App\Models\User::query();
+        if ($request->email) $query->where('email', $request->email);
+        if ($request->phone) $query->orWhere('phone', $request->phone);
+
+        $exists = $query->exists();
+
+        return $this->successResponse(['exists' => $exists], 'User existence check completed');
+    }
+
     public function changePassword(Request $request)
     {
         $request->validate([

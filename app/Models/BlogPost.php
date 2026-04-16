@@ -26,7 +26,7 @@ class BlogPost extends Model
             return null;
         }
         
-        // Force use the root APP_URL from .env to avoid /api/v1/ prefixing
+        // Force use the root APP_URL from .env to avoid /API/V1/ prefixing
         return rtrim(config('app.url'), '/') . '/storage/' . $this->image_path;
     }
 

@@ -59,7 +59,7 @@ class SupplierController extends Controller
         return response()->json([
             'status'  => true,
             'message' => 'Supplier fetched brilliantly flawlessly.',
-            'data'    => new SupplierResource($supplier->load('products')),
+            'data'    => new SupplierResource($supplier->load('inventories')),
         ]);
     }
 
@@ -100,8 +100,8 @@ class SupplierController extends Controller
     {
         $request->validate([
             'products' => 'required|array',
-            'products.*.product_id' => 'required|exists:products,id',
-            'products.*.purchase_price' => 'required|numeric'
+            'products.*.sku' => 'required|string',
+            'products.*.buying_price' => 'required|numeric'
         ]);
 
         $this->supplierService->associateProducts($id, $request->get('products'));

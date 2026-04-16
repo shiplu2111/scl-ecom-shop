@@ -32,12 +32,9 @@ class AdminPaymentCredentialController extends BaseController
 
         $validated = $request->validate([
             'name' => ['required', 'string', Rule::in($allowedGateways)],
+            'base_url' => 'nullable|url',
             'environment' => 'required|in:sandbox,live',
-            'merchant_id' => 'required|string',
             'secret_key' => 'required|string',
-            'callback_url' => 'nullable|url',
-            'success_url' => 'nullable|url',
-            'cancel_url' => 'nullable|url',
             'is_active' => 'boolean',
         ]);
 
@@ -55,12 +52,9 @@ class AdminPaymentCredentialController extends BaseController
 
         $validated = $request->validate([
             'name' => 'sometimes|string',
+            'base_url' => 'nullable|url',
             'environment' => 'sometimes|in:sandbox,live',
-            'merchant_id' => 'sometimes|string',
             'secret_key' => 'sometimes|string',
-            'callback_url' => 'nullable|url',
-            'success_url' => 'nullable|url',
-            'cancel_url' => 'nullable|url',
             'is_active' => 'boolean',
         ]);
 

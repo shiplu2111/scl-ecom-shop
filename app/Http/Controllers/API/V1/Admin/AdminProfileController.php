@@ -84,4 +84,19 @@ class AdminProfileController extends BaseController
             'avatar' => $admin->avatar_url,
         ], 'Avatar uploaded successfully');
     }
+
+    /**
+     * Get activity logs for the authenticated admin.
+     */
+    public function activities(Request $request)
+    {
+        $admin = auth('admin')->user();
+        $logs = \Spatie\Activitylog\Models\Activity::where('causer_id', $admin->id)
+            ->where('causer_type', get_class($admin))
+            ->with(['subject'])
+            ->latest()
+            ->paginate($request->get('per_page', 15));
+
+        return $this->successResponse($logs, 'Personal activities retrieved successfully');
+    }
 }

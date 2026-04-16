@@ -38,10 +38,13 @@ class SubscriptionConfirmation extends Mailable
      */
     public function content(): Content
     {
+        $siteSettings = \App\Models\Setting::where('group', 'site')->pluck('value', 'key')->toArray();
+
         return new Content(
             markdown: 'emails.subscription-confirmation',
             with: [
                 'email' => $this->subscriber->email,
+                'site_settings' => $siteSettings
             ],
         );
     }

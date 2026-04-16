@@ -10,10 +10,12 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "carlos-meneses/laravel-mpdf": "*",
         "intervention/image": "*",
         "laravel/framework": "^13.0",
         "laravel/sanctum": "^4.0",
         "laravel/scout": "*",
+        "laravel/socialite": "*",
         "laravel/tinker": "^3.0",
         "predis/predis": "*",
         "pusher/pusher-php-server": "*",

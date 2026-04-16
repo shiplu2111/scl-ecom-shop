@@ -19,16 +19,41 @@ class WishlistController extends BaseController
         $this->wishlistService = $wishlistService;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $wishlists = auth()->user()->wishlists()->with('product')->get();
-        return $this->successResponse($wishlists, 'Wishlist fetched securely successfully');
+        $userId = auth()->id();
+        $sessionId = $request->header('X-Cart-Session');
+
+        $query = \App\Models\Wishlist::with(['product', 'product.images', 'product.variants']);
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        } else if ($sessionId) {
+            $query->where('session_id', $sessionId);
+        } else {
+            return $this->successResponse([], 'Wishlist empty (no session or user)');
+        }
+
+        $wishlists = $query->get();
+        return $this->successResponse($wishlists, 'Wishlist fetched successfully');
     }
 
     public function toggle(WishlistRequest $request)
     {
-        $result = $this->wishlistService->toggleWishlist(auth()->id(), $request->product_id);
+        $userId = auth()->id();
+        $sessionId = $request->header('X-Cart-Session');
+
+        if (!$userId && !$sessionId) {
+            return $this->errorResponse('Authentication or Session required', 400);
+        }
+
+        $result = $this->wishlistService->toggleWishlist(
+            $userId, 
+            $request->product_id, 
+            $sessionId,
+            $request->product_variant_id
+        );
         
-        return $this->successResponse($result, 'Wishlist toggled organically');
+        return $this->successResponse($result, 'Wishlist toggled successfully');
     }
 }

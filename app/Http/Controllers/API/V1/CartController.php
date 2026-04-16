@@ -30,7 +30,7 @@ class CartController extends BaseController
     public function index(Request $request)
     {
         $cart = $this->resolveCart($request);
-        $cart->load(['items.product', 'items.productVariant', 'coupon']);
+        $cart->load(['items.product.images', 'items.productVariant', 'coupon']);
         
         return $this->successResponse(new \App\Http\Resources\CartResource($cart), 'Cart fetched successfully');
     }
@@ -40,9 +40,20 @@ class CartController extends BaseController
         $cart = $this->resolveCart($request);
         $this->cartService->addItem($cart, $request->validated());
 
-        $cart->load(['items.product', 'items.productVariant', 'coupon']);
+        $cart->load(['items.product.images', 'items.productVariant', 'coupon']);
 
         return $this->successResponse(new \App\Http\Resources\CartResource($cart), 'Item added to cart', 201);
+    }
+
+    public function updateQuantity(Request $request, $itemId)
+    {
+        $request->validate(['quantity' => 'required|integer|min:1']);
+        
+        $cart = $this->resolveCart($request);
+        $this->cartService->updateItemQuantity($cart, $itemId, $request->quantity);
+
+        $cart->load(['items.product.images', 'items.productVariant', 'coupon']);
+        return $this->successResponse(new \App\Http\Resources\CartResource($cart), 'Quantity updated successfully');
     }
 
     public function remove(Request $request, $itemId)
@@ -50,7 +61,7 @@ class CartController extends BaseController
         $cart = $this->resolveCart($request);
         $this->cartService->removeItem($cart->id, $itemId);
 
-        $cart->load(['items.product', 'items.productVariant', 'coupon']);
+        $cart->load(['items.product.images', 'items.productVariant', 'coupon']);
         
         return $this->successResponse(new \App\Http\Resources\CartResource($cart), 'Item removed specifically successfully');
     }
@@ -60,7 +71,7 @@ class CartController extends BaseController
         $request->validate(['code' => 'required|string']);
 
         $cart = $this->resolveCart($request);
-        $cart->load('items.product', 'items.productVariant');
+        $cart->load(['items.product.images', 'items.productVariant']);
         
         $tempResource = new \App\Http\Resources\CartResource($cart);
         // Force the resource to map to array to manually fetch the clean generic subtotal smoothly easily smartly explicitly
@@ -87,7 +98,7 @@ class CartController extends BaseController
         $cart = $this->resolveCart($request);
         $cart->update(['coupon_id' => null]);
         
-        $cart->load(['items.product', 'items.productVariant']);
+        $cart->load(['items.product.images', 'items.productVariant']);
         return $this->successResponse(new \App\Http\Resources\CartResource($cart), 'Coupon removed securely successfully');
     }
 }

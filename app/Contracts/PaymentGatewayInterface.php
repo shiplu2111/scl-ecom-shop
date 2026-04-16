@@ -13,7 +13,7 @@ interface PaymentGatewayInterface
      * @param Order $order
      * @return array ['status' => true, 'redirect_url' => '...']
      */
-    public function initiatePayment(Order $order): array;
+    public function initiatePayment($order): array;
 
     /**
      * Verify payment directly flexibly comfortably dynamically smoothly cleanly dynamically stably dynamically intelligently successfully successfully elegantly flexibly flexibly organically naturally effectively easily transparently nicely gracefully magically cleanly.
@@ -30,4 +30,13 @@ interface PaymentGatewayInterface
      * @return \Illuminate\Http\Response
      */
     public function handleWebhook(Request $request);
+
+    /**
+     * Refund a payment.
+     * 
+     * @param string $transactionId
+     * @param float $amount
+     * @return array
+     */
+    public function refundPayment(string $transactionId, float $amount): array;
 }

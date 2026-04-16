@@ -2,18 +2,33 @@
 
 namespace App\Http\Controllers\API\V1;
 
-use App\Http\Controllers\Controller;
-use App\Models\Page;
+use App\Http\Resources\PageResource;
+use App\Services\PageService;
+use Illuminate\Http\JsonResponse;
 
-/**
- * @group Public
- * @subgroup Page
- */
-class PageController extends Controller
+class PageController extends BaseController
 {
-    public function show($slug)
+    protected PageService $pageService;
+
+    public function __construct(PageService $pageService)
     {
-        $page = Page::where('slug', $slug)->where('status', 'published')->firstOrFail();
-        return response()->json($page);
+        $this->pageService = $pageService;
+    }
+
+    /**
+     * Display the specified page by slug properly brilliantly flawlessly.
+     */
+    public function show(string $slug): JsonResponse
+    {
+        $page = $this->pageService->findBySlug($slug);
+        
+        if (!$page) {
+            return $this->errorResponse('Page not found flawlessly.', null, 404);
+        }
+
+        return $this->successResponse(
+            new PageResource($page),
+            'Page details fetched brilliantly flawlessly.'
+        );
     }
 }

@@ -22,7 +22,15 @@ class OrderResource extends JsonResource
             'delivery_charge_paid' => (bool) $this->delivery_charge_paid,
             'paid_amount' => $this->paid_amount,
             'due_amount' => $this->due_amount,
+            'courier_name' => $this->courier_name,
+            'tracking_number' => $this->tracking_number,
+            'consignment_id' => $this->consignment_id,
             'created_at' => $this->created_at,
+            'address' => $this->shippingAddress?->address_line,
+            'thana' => $this->shippingAddress?->thana ? ['name' => $this->shippingAddress->thana->name] : null,
+            'district' => $this->shippingAddress?->district ? ['name' => $this->shippingAddress->district->name] : null,
+            'division' => $this->shippingAddress?->division ? ['name' => $this->shippingAddress->division->name] : null,
+            'postal_code' => $this->shippingAddress?->postal_code,
             'items_count' => $this->whenCounted('items', $this->items_count, $this->whenLoaded('items', function() {
                 return $this->items->count();
             })),
@@ -38,6 +46,7 @@ class OrderResource extends JsonResource
                 'shipping_address' => $this->whenLoaded('shippingAddress'),
             ],
             'items' => OrderItemResource::collection($this->whenLoaded('items')),
+            'histories' => OrderHistoryResource::collection($this->whenLoaded('histories')),
             'coupon' => new CouponResource($this->whenLoaded('coupon')),
             'user' => new UserResource($this->whenLoaded('user')),
         ];

@@ -16,5 +16,6 @@ class CourierCredential extends Model
         'api_secret',
         'account_id',
         'is_active',
+        'webhook_token',
     ];
 }

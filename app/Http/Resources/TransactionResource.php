@@ -17,15 +17,19 @@ class TransactionResource extends JsonResource
         return [
             'id'               => $this->id,
             'order_id'         => $this->order_id,
+            'order_number'     => $this->order?->order_number,
             'gateway'          => $this->gateway,
             'transaction_id'   => $this->transaction_id,
             'amount'           => $this->amount,
+            'type'             => $this->type,
+            'description'      => $this->description,
             'status'           => $this->status,
             'response_payload' => $this->response_payload,
             'created_at'       => $this->created_at,
             'updated_at'       => $this->updated_at,
             
             // Relationships
+            'user'             => new UserResource($this->whenLoaded('order.user')),
             'order'            => new OrderResource($this->whenLoaded('order')),
         ];
     }

@@ -14,6 +14,9 @@ class UserAddressRequest extends FormRequest
     public function rules()
     {
         return [
+            'full_name'    => 'required|string|max:255',
+            'phone'        => 'nullable|string|max:20',
+            'label'        => 'nullable|string|max:50',
             'division_id'  => 'required|exists:divisions,id',
             'district_id'  => 'required|exists:districts,id',
             'thana_id'     => 'required|exists:thanas,id',

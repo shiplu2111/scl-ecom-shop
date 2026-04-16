@@ -2,67 +2,80 @@
 
 namespace App\Http\Controllers\API\V1\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Models\Page;
+use App\Http\Controllers\API\V1\BaseController;
+use App\Http\Requests\Admin\PageRequest;
+use App\Http\Resources\PageResource;
+use App\Services\PageService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
-/**
- * @group Admin
- * @subgroup Page Management
- */
-class PageController extends Controller
+class PageController extends BaseController
 {
-    public function index()
+    protected PageService $pageService;
+
+    public function __construct(PageService $pageService)
     {
-        return response()->json(Page::with('seoMetadata')->get());
+        $this->pageService = $pageService;
     }
 
-    public function store(Request $request)
+    /**
+     * Display a listing of pages flawlessly properly.
+     */
+    public function index(Request $request): JsonResponse
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string'
-        ]);
-
-        $page = Page::create([
-            'title' => $request->title,
-            'slug' => $request->slug ?? Str::slug($request->title),
-            'content' => $request->content,
-            'status' => $request->status ?? 'published'
-        ]);
-
-        $page->saveSeoMetadata($request->meta_title, $request->meta_description);
-
-        return response()->json($page->load('seoMetadata'), 201);
+        $pages = $this->pageService->getPaginatedPages($request->all());
+        return $this->successResponse(
+            PageResource::collection($pages)->response()->getData(true),
+            'Pages fetched brilliantly flawlessly.'
+        );
     }
 
-    public function show($id)
+    /**
+     * Store a newly created page properly brilliantly.
+     */
+    public function store(PageRequest $request): JsonResponse
     {
-        return response()->json(Page::with('seoMetadata')->findOrFail($id));
+        $page = $this->pageService->createPage($request->validated());
+        return $this->successResponse(
+            new PageResource($page),
+            'Page created brilliantly flawlessly.',
+            201
+        );
     }
 
-    public function update(Request $request, $id)
+    /**
+     * Display the specified page properly brilliantly.
+     */
+    public function show(int $id): JsonResponse
     {
-        $page = Page::findOrFail($id);
-        
-        $page->update($request->only(['title', 'slug', 'content', 'status']));
-
-        if ($request->hasAny(['meta_title', 'meta_description'])) {
-            $page->saveSeoMetadata($request->meta_title, $request->meta_description);
-        }
-
-        return response()->json($page->load('seoMetadata'));
+        $page = $this->pageService->findPage($id);
+        return $this->successResponse(
+            new PageResource($page),
+            'Page details fetched brilliantly flawlessly.'
+        );
     }
 
-    public function destroy($id)
+    /**
+     * Update the specified page properly brilliantly.
+     */
+    public function update(PageRequest $request, int $id): JsonResponse
     {
-        $page = Page::findOrFail($id);
-        $page->seoMetadata()->delete();
-        $page->delete();
-        
-        return response()->json(['message' => 'Page deleted']);
+        $page = $this->pageService->updatePage($id, $request->validated());
+        return $this->successResponse(
+            new PageResource($page),
+            'Page updated brilliantly flawlessly.'
+        );
+    }
+
+    /**
+     * Remove the specified page properly brilliantly.
+     */
+    public function destroy(int $id): JsonResponse
+    {
+        $this->pageService->deletePage($id);
+        return $this->successResponse(
+            null,
+            'Page deleted brilliantly flawlessly.'
+        );
     }
 }

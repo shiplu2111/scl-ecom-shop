@@ -20,12 +20,28 @@ class CategoryController extends BaseController
     }
 
     /**
-     * List all root categories with children.
+     * List categories with optional tree structure.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = $this->categoryService->fetchPublic();
+        $rootOnly = $request->boolean('root_only', false);
+        
+        if ($rootOnly) {
+            $categories = $this->categoryService->fetchRootCategories();
+        } else {
+            $categories = $this->categoryService->fetchPublic();
+        }
+
         return $this->successResponse(CategoryResource::collection($categories), 'Categories retrieved successfully');
+    }
+
+    /**
+     * List subcategories for a given parent category.
+     */
+    public function subcategories(int $parentId)
+    {
+        $subcategories = $this->categoryService->fetchSubCategories($parentId);
+        return $this->successResponse(CategoryResource::collection($subcategories), 'Subcategories retrieved successfully');
     }
 
     /**

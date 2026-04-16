@@ -1,6 +1,7 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Admin\Location;
+namespace App\Http\Controllers\API\V1\Admin\Location;
+
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Location\StoreDistrictRequest;

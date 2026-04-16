@@ -38,20 +38,32 @@ class SyncInventoryStock extends Command
 
         foreach ($products as $product) {
             DB::transaction(function () use ($product) {
-                // Calculate total stock from variants flawlessly properly
-                $totalStock = $product->variants->sum('stock');
-
-                // Update product table quantity flawlessly properly
-                $product->update(['quantity' => $totalStock]);
-
-                // Initialize or update the inventory record flawlessly brilliantly
-                Inventory::updateOrCreate(
-                    ['product_id' => $product->id],
-                    [
-                        'quantity' => $totalStock,
-                        'low_stock_alert' => 5, // Default intelligently perfectly effectively flawlessly
-                    ]
-                );
+                if ($product->variants->isNotEmpty()) {
+                    foreach ($product->variants as $variant) {
+                        // Stock was previously stored in product_variants.stock (which is being removed)
+                        // This command might be used on an existing DB before the fresh migration, 
+                        // but since the user is doing fresh, this command is mostly for future reference or 
+                        // if they want to migrate data. 
+                        // However, we'll make it work with the new structure.
+                        
+                        Inventory::updateOrCreate(
+                            ['sku' => $variant->sku],
+                            [
+                                'quantity' => 0, // Default for fresh sync
+                                'alert_quantity' => 5,
+                            ]
+                        );
+                    }
+                } else {
+                    // Simple product
+                    Inventory::updateOrCreate(
+                        ['sku' => $product->sku],
+                        [
+                            'quantity' => 0,
+                            'alert_quantity' => 5,
+                        ]
+                    );
+                }
             });
 
             $bar->advance();

@@ -10,13 +10,31 @@ class Inventory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'product_id',
+        'sku',
+        'buying_price',
+        'supplier_id',
         'quantity',
-        'low_stock_alert'
+        'alert_quantity'
     ];
+
+    public static function forSku(?string $sku): int
+    {
+        if (!$sku) return 0;
+        return self::where('sku', $sku)->value('quantity') ?? 0;
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
+
+    public function variant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'sku', 'sku');
+    }
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(Product::class, 'sku', 'sku');
     }
 }

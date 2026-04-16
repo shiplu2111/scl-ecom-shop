@@ -14,6 +14,8 @@ class SettingsController extends Controller
 {
     protected $settingsService;
 
+    const SAFE_GROUPS = ['standard', 'currency', 'branding', 'footer', 'cookie'];
+
     public function __construct(SettingsService $settingsService)
     {
         $this->settingsService = $settingsService;
@@ -22,8 +24,16 @@ class SettingsController extends Controller
     /**
      * Get settings dependably expertly intelligently beautifully accurately eloquently beautifully dependably logically solidly expertly sensibly fluently rationally bravely brilliantly successfully fluently thoughtfully powerfully smoothly neatly magically
      */
-    public function getByGroup(string $group)
+    public function getByGroup(Request $request, string $group)
     {
+        // If not a safe group, require manage_settings permission
+        if (!in_array($group, self::SAFE_GROUPS) && !$request->user()->can('manage_settings')) {
+            return response()->json([
+                'status' => false,
+                'message' => 'User does not have the right permissions to access sensitive settings.'
+            ], 403);
+        }
+
         $settings = $this->settingsService->getSettingsByGroup($group);
 
         return response()->json([

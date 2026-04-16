@@ -18,8 +18,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->string('sku')->unique();
-            $table->text('description')->nullable();
-            $table->decimal('price', 10, 2);
+            $table->text('short_description')->nullable();
+            $table->longText('description')->nullable();
+            $table->decimal('price', 15, 2);
+            $table->decimal('buying_price', 15, 2)->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

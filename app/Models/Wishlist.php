@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Activitylog\LogOptions;
 
-#[Fillable(['user_id', 'product_id'])]
+#[Fillable(['user_id', 'product_id', 'session_id', 'product_variant_id'])]
 class Wishlist extends Model
 {
     use LogsActivity;

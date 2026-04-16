@@ -21,11 +21,11 @@ class CheckMaintenanceMode
     public function handle(Request $request, Closure $next): Response
     {
         // Skip for admin routes, status checks, and health check
-        if ($request->is('api/v1/admin/*') || 
-            $request->is('api/v1/maintenance') || 
-            $request->is('api/v1/cookie-settings') || 
+        if ($request->is('API/V1/admin/*') || 
+            $request->is('API/V1/maintenance') || 
+            $request->is('API/V1/cookie-settings') || 
             $request->is('up') || 
-            $request->is('api/v1/admin-auth/*')) {
+            $request->is('API/V1/admin-auth/*')) {
             return $next($request);
         }
 

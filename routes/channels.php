@@ -7,8 +7,19 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('admin.tickets', function ($user) {
-    // Basic check: if it's an admin
-    // If you have a specific admin model or role, check it here
-    // For now, let's assume any authenticated user with admin-like permissions can see it
     return $user->hasRole('super_admin') || $user->hasPermissionTo('tickets_read');
+});
+
+Broadcast::channel('ticket.{id}', function ($user, $id) {
+    // Both Admins and the Customer who owns the ticket can access the channel flawlessly properly
+    $ticket = \App\Models\Ticket::find($id);
+    if (!$ticket) return false;
+
+    // Is Admin?
+    if ($user instanceof \App\Models\Admin) {
+        return $user->hasRole('super_admin') || $user->hasPermissionTo('tickets_read');
+    }
+
+    // Is Customer?
+    return (int) $user->id === (int) $ticket->user_id;
 });

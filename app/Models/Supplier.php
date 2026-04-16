@@ -19,12 +19,10 @@ class Supplier extends Model
     ];
 
     /**
-     * Relationship: Products correctly seamlessly natively fluently beautifully comfortably correctly beautifully effortlessly intelligently brilliantly brilliantly
+     * Relationship: Inventories (SKU-based)
      */
-    public function products()
+    public function inventories()
     {
-        return $this->belongsToMany(Product::class, 'product_supplier')
-                    ->withPivot('purchase_price', 'last_supplied_at')
-                    ->withTimestamps();
+        return $this->hasMany(Inventory::class);
     }
 }

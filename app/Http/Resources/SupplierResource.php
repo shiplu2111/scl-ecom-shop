@@ -20,8 +20,8 @@ class SupplierResource extends JsonResource
             'email'        => $this->email,
             'address'      => $this->address,
             'status'       => $this->status,
-            'products_count' => $this->whenCounted('products'),
-            'products'     => ProductResource::collection($this->whenLoaded('products')),
+            'inventories_count' => $this->whenCounted('inventories'),
+            'inventories'     => $this->whenLoaded('inventories'),
             'created_at'   => $this->created_at->toDateTimeString(),
             'updated_at'   => $this->updated_at->toDateTimeString(),
         ];

@@ -9,4 +9,5 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function toggleStatus(int $userId);
     public function updateDeviceId(int $userId, string $deviceId);
     public function clearDeviceId(int $userId);
+    public function findByProvider(string $provider, string $providerId);
 }

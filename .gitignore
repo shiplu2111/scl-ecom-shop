@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+/resources.zip
+/*.php
+/tinker_out.json

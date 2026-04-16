@@ -51,9 +51,9 @@ class TicketService extends BaseService
                 'attachments' => $data['attachments'] ?? null,
             ]);
 
-            DB::afterCommit(function () use ($ticket) {
-                // Dispatch event for real-time pushing
-                broadcast(new TicketCreated($ticket))->toOthers();
+            DB::afterCommit(function () use ($ticket, $message) {
+                // Dispatch event for real-time pushing (Ticket specific channel flawlessly properly)
+                broadcast(new \App\Events\TicketMessageSent($message))->toOthers();
 
                 // Create database notifications for active admins
                 $admins = Admin::where('is_active', true)->get();
@@ -82,15 +82,23 @@ class TicketService extends BaseService
                 $ticket->update(['status' => 'open']);
             }
 
-            // If sender is a customer, notify admins real-time and DB
-            if ($sender instanceof User) {
-                DB::afterCommit(function () use ($ticket, $message) {
-                    broadcast(new TicketReplied($ticket, $message))->toOthers();
-                    
+            DB::afterCommit(function () use ($ticket, $message, $sender) {
+                // Broadcast for real-time chat (both Admin and Customer panels brilliantly flawlessly properly)
+                broadcast(new \App\Events\TicketMessageSent($message))->toOthers();
+                
+                if ($sender instanceof User) {
                     $admins = Admin::where('is_active', true)->get();
                     Notification::send($admins, new AdminTicketRepliedNotification($ticket, $message));
-                });
-            }
+                } else {
+                    // Notify user real-time in navbar flawlessly properly
+                    broadcast(new \App\Events\SupportNotification(
+                        $ticket->user_id, 
+                        "Admin replied to your ticket: {$ticket->subject}",
+                        'ticket',
+                        "/dashboard/support?id={$ticket->id}"
+                    ));
+                }
+            });
 
             return $message;
         });

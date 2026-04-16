@@ -7,24 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Run the migrations gracefully flawlessly flawlessly properly brilliantly.
+     * Run the migrations.
      */
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'quantity')) {
-                $table->integer('quantity')->default(0)->after('discount_price');
-            }
+            $table->decimal('min_price', 10, 2)->nullable()->after('discount_price');
+            $table->decimal('max_price', 10, 2)->nullable()->after('min_price');
+            $table->decimal('min_discount_price', 10, 2)->nullable()->after('max_price');
         });
     }
 
     /**
-     * Reverse the migrations flawlessly properly flawlessly excellence.
+     * Reverse the migrations.
      */
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn('quantity');
+            $table->dropColumn(['min_price', 'max_price', 'min_discount_price']);
         });
     }
 };

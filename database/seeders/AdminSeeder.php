@@ -30,5 +30,6 @@ class AdminSeeder extends Seeder
         if (!$admin->hasRole('super_admin')) {
             $admin->assignRole($role);
         }
+         $this->command->info('Admin seeded successfully!');
     }
 }

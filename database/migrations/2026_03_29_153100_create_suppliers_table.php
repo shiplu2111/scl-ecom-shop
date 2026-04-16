@@ -27,17 +27,6 @@ return new class extends Migration
             $row->index('status');
         });
 
-        Schema::create('product_supplier', function (Blueprint $row) {
-            $row->id();
-            $row->foreignId('product_id')->constrained()->onDelete('cascade');
-            $row->foreignId('supplier_id')->constrained()->onDelete('cascade');
-            $row->decimal('purchase_price', 15, 2);
-            $row->timestamp('last_supplied_at')->nullable();
-            $row->timestamps();
-            
-            // Unique constraint to prevent duplicate links
-            $row->unique(['product_id', 'supplier_id']);
-        });
     }
 
     /**
@@ -45,7 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_supplier');
         Schema::dropIfExists('suppliers');
     }
 };

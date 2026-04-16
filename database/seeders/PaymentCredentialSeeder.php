@@ -20,5 +20,7 @@ class PaymentCredentialSeeder extends Seeder
             'callback_url' => 'https://sandbox.uddoktapay.com/callback',
             'is_active' => true,
         ]);
+        
+        $this->command->info('Payment credentials seeded successfully!');
     }
 }

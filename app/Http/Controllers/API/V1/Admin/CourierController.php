@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Services\Courier\CourierManager;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 
 /**
@@ -14,10 +15,12 @@ use Illuminate\Http\Request;
 class CourierController extends Controller
 {
     protected CourierManager $courierManager;
+    protected OrderService $orderService;
 
-    public function __construct(CourierManager $courierManager)
+    public function __construct(CourierManager $courierManager, OrderService $orderService)
     {
         $this->courierManager = $courierManager;
+        $this->orderService = $orderService;
     }
 
     /**
@@ -41,13 +44,19 @@ class CourierController extends Controller
                     'order_status' => 'shipped',
                 ]);
 
+                $this->orderService->logHistory($order, 'dispatched', "Order dispatched to {$request->courier}", [
+                    'courier' => $request->courier,
+                    'consignment_id' => $response['consignment_id'],
+                    'tracking_code' => $response['tracking_code'],
+                ]);
+
                 return response()->json([
                     'message' => 'Order successfully dispatched to courier.',
                     'tracking_info' => $response
                 ]);
             }
 
-            return response()->json(['message' => 'Failed to dispatch order.'], 400);
+            return response()->json(['message' => $response['message'] ?? 'Failed to dispatch order.'], 400);
 
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
@@ -73,6 +82,45 @@ class CourierController extends Controller
 
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Get steadfast courier balance.
+     */
+    public function getBalance()
+    {
+        try {
+            $gateway = $this->courierManager->driver('steadfast');
+            $response = $gateway->getBalance();
+
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Create return request for an order.
+     */
+    public function createReturn(Order $order, Request $request)
+    {
+        if (!$order->courier_name || !$order->consignment_id) {
+            return response()->json(['message' => 'This order has not been dispatched yet.'], 400);
+        }
+
+        try {
+            $gateway = $this->courierManager->driver($order->courier_name);
+            $response = $gateway->createReturnRequest($order->consignment_id, $request->reason);
+
+            if ($response['success']) {
+                $this->orderService->logHistory($order, 'return_requested', "Return request created: " . ($request->reason ?? 'No reason provided'));
+            }
+
+            return response()->json($response);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 }

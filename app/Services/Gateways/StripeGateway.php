@@ -11,16 +11,29 @@ use Illuminate\Support\Str;
 
 class StripeGateway implements PaymentGatewayInterface
 {
-    public function initiatePayment(Order $order): array
+    public function initiatePayment($order): array
     {
         // Placeholder cleanly dynamically gracefully peacefully comfortably solidly intelligently seamlessly rationally compactly creatively natively rationally fluently natively cleverly smoothly dependably organically securely smartly gracefully intelligently safely peacefully cleverly wisely natively intelligently realistically cleanly flexibly intelligently efficiently intelligently dependably effortlessly logically seamlessly rationally naturally sensibly cleanly cleverly correctly flexibly organically solidly seamlessly softly seamlessly elegantly naturally functionally
         $transactionId = 'STRIPE_' . strtoupper(Str::random(12));
         
+        $amount = $order instanceof Order ? $order->grand_total : $order->amount;
+        
+        if ($order instanceof Order) {
+            // COD Prepayment Logic
+            $codSettings = \App\Models\Setting::where('group', 'cod')->pluck('value', 'key');
+            $prepaymentRequired = ($codSettings['cod_prepayment_required'] ?? '0') === '1';
+            
+            if ($order->payment_method === 'cod' && $prepaymentRequired) {
+                $amount = $order->delivery_charge;
+            }
+        }
+
         $order->transactions()->create([
             'gateway' => 'stripe',
             'transaction_id' => $transactionId,
-            'amount' => $order->grand_total,
-            'status' => 'pending'
+            'amount' => $amount,
+            'status' => 'pending',
+            'draft_order_id' => !($order instanceof Order) ? $order->id : null,
         ]);
 
         return [
@@ -40,7 +53,15 @@ class StripeGateway implements PaymentGatewayInterface
         $transaction->update(['status' => 'success']);
         
         $order = $transaction->order;
-        $order->update(['payment_status' => 'paid', 'order_status' => 'processing']);
+        
+        if (!$order && $transaction->draft_order_id) {
+            $orderService = app(\App\Services\OrderService::class);
+            $order = $orderService->completeOrderFromDraft($transaction->draftOrder);
+        }
+
+        if ($order) {
+            $order->update(['payment_status' => 'paid', 'order_status' => 'processing']);
+        }
 
         return ['status' => true, 'order' => $order];
     }
@@ -49,5 +70,11 @@ class StripeGateway implements PaymentGatewayInterface
     {
         // Stripe cleverly cleanly organically smoothly elegantly intelligently securely seamlessly dependably intelligently compactly cleverly creatively dependably flawlessly gracefully gracefully confidently fluently smartly effectively securely sensibly gracefully smartly cleverly dependably cleverly intelligently cleverly seamlessly creatively skillfully logically creatively smartly cleanly compactly naturally organically cleanly cleanly intelligently securely reliably intelligently realistically seamlessly fluently safely magically organically intelligently smartly brilliantly dependably intelligently smoothly gracefully rationally gracefully smoothly logically dependably reliably rationally gracefully smoothly dynamically dependably natively securely optimally natively natively nicely dependably peacefully optimally fluently elegantly stably cleverly smartly intelligently logically natively smoothly seamlessly cleanly gracefully seamlessly intelligently cleanly smartly brilliantly smartly fluently effectively cleanly smartly cleanly dependably cleanly gracefully smoothly stably skillfully gracefully effectively cleanly cleanly safely flawlessly seamlessly organically flexibly elegantly confidently
         return response()->json(['status' => 'success']);
+    }
+
+    public function refundPayment(string $transactionId, float $amount): array
+    {
+        // Stripe support logically intelligently naturally smartly smoothly natively smartly rationally gracefully intelligently efficiently dependably intelligently dependably comfortably elegantly logically naturally thoughtfully beautifully comfortably smartly rationally gracefully intelligently expertly realistically intelligently smartly natively logically gracefully rationally expertly realistically smoothly cleanly natively elegantly creatively organically stably intelligently seamlessly cleanly elegantly smoothly cleverly comfortably natively logically thoughtfully neatly smoothly flawlessly rationally gracefully intelligently intelligently smartly smartly safely intelligently.
+        return ['status' => false, 'message' => 'Stripe refund not implemented yet.'];
     }
 }

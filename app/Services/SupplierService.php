@@ -76,22 +76,21 @@ class SupplierService extends BaseService
     }
 
     /**
-     * Associate products intelligently flawlessly effectively brilliantly impeccably
+     * Associate products via SKU intelligently flawlessly effectively brilliantly
      */
-    public function associateProducts(int $id, array $products): void
+    public function associateProducts(int $id, array $items): void
     {
         $supplier = $this->findSupplier($id);
         
-        // Transform products array for sync elegantly correctly brilliantly
-        // Input follows: [{product_id: 1, purchase_price: 1500}, ...]
-        $syncData = [];
-        foreach ($products as $product) {
-            $syncData[$product['product_id']] = [
-                'purchase_price' => $product['purchase_price'],
-                'last_supplied_at' => now(),
-            ];
+        // Input follows: [{sku: "SKU123", buying_price: 1500}, ...]
+        foreach ($items as $item) {
+            \App\Models\Inventory::updateOrCreate(
+                ['sku' => $item['sku']],
+                [
+                    'supplier_id' => $supplier->id,
+                    'buying_price' => $item['buying_price'] ?? null
+                ]
+            );
         }
-
-        $supplier->products()->sync($syncData);
     }
 }
