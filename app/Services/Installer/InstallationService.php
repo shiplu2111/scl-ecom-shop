@@ -204,6 +204,12 @@ class InstallationService
             \Illuminate\Support\Facades\Log::error('Failed to send installation finished email: ' . $e->getMessage());
         }
 
+        // Set environment to production and disable debug mode
+        $this->updateEnv([
+            'APP_ENV' => 'production',
+            'APP_DEBUG' => 'false',
+        ]);
+
         File::put(storage_path('installed'), json_encode([
             'date' => date('Y-m-d H:i:s'),
             'version' => config('app.version', '1.0.0'),
