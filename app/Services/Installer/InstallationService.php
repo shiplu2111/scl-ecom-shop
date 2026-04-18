@@ -188,7 +188,6 @@ class InstallationService
     {
         Artisan::call('key:generate', ['--force' => true]);
         Artisan::call('storage:link', ['--force' => true]);
-        Artisan::call('scribe:generate', ['--force' => true]);
 
         // Generate JWT Secret if not provided or if it's the placeholder
         $jwtSecret = env('JWT_SECRET');
