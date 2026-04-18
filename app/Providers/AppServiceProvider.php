@@ -53,7 +53,12 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Config::set('app.url', env('APP_URL', 'http://192.168.0.126:8000'));
-        $this->app['request']->server->set('HTTPS', $this->app->environment('production'));
+        // Force HTTPS if the request is secure or behind a proxy that terminates SSL
+        if ($this->app->environment('production') || 
+            $this->app['request']->isSecure() || 
+            (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
 
         Gate::before(function ($user, $ability) {
             return $user->hasRole('super_admin') ? true : null;
