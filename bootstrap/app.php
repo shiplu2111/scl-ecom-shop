@@ -4,6 +4,11 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
+// Copy .env from .env.example if missing to prevent 500 errors
+if (!file_exists(dirname(__DIR__) . '/.env') && file_exists(dirname(__DIR__) . '/.env.example')) {
+    copy(dirname(__DIR__) . '/.env.example', dirname(__DIR__) . '/.env');
+}
+
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
@@ -18,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
         'middleware' => ['auth:api,admin'],
     ])
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->web(append: [
+            \App\Http\Middleware\CheckIfInstalled::class,
+        ]);
         $middleware->api(prepend: [
             \App\Http\Middleware\ForceJsonResponse::class,
             \App\Http\Middleware\CheckMaintenanceMode::class,
@@ -28,6 +36,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'user.active' => \App\Http\Middleware\CheckUserActive::class,
+            'installed' => \App\Http\Middleware\CheckIfInstalled::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

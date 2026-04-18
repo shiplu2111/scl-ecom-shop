@@ -20,12 +20,10 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
+        env('APP_FRONTEND_URL', 'http://localhost:3001'),
+        env('APP_ADMIN_URL', 'http://localhost:3000'),
         'https://ecom-shop.saracodelabs.com.bd',
         'https://shop-admin.saracodelabs.com.bd',
-        'http://localhost:3000',
-        'http://localhost:3001',
-        'http://localhost:3002',
-        'http://localhost:3003'
     ],
 
     'allowed_origins_patterns' => [],

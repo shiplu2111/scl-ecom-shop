@@ -71,7 +71,7 @@ class UddoktaPayGateway implements PaymentGatewayInterface
             }
         }
 
-        $frontendUrl = rtrim(env('APP_FRONTEND_URL', 'http://localhost:3000'), '/');
+        $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
         $backendUrl  = rtrim(config('app.url'), '/');
 
         $payload = [
@@ -84,8 +84,8 @@ class UddoktaPayGateway implements PaymentGatewayInterface
                 'order_number' => $orderNumber,
                 'is_draft'     => $order instanceof Order ? '0' : '1',
             ],
-            'redirect_url' => rtrim(env('APP_FRONTEND_URL'), '/') . "/payment/success",
-            'cancel_url'   => rtrim(env('APP_FRONTEND_URL'), '/') . "/payment/cancel",
+            'redirect_url' => rtrim(config('app.frontend_url'), '/') . "/payment/success",
+            'cancel_url'   => rtrim(config('app.frontend_url'), '/') . "/payment/cancel",
             'webhook_url'  => rtrim(config('app.url'), '/') . "/API/V1/payment/uddoktapay/webhook",
             'return_type'  => 'GET',
         ];

@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('payment_credentials', function (Blueprint $table) {
             $table->id();
-            $table->string('name'); // UddoktaPay
+            $table->string('name')->unique();
+            $table->string('base_url')->nullable();
             $table->enum('environment', ['sandbox', 'live'])->default('sandbox');
-            $table->string('merchant_id')->nullable();
-            $table->string('secret_key')->nullable();
-            $table->string('callback_url')->nullable();
+            $table->text('secret_key')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
