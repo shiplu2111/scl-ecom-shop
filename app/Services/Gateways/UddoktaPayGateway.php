@@ -33,20 +33,29 @@ class UddoktaPayGateway implements PaymentGatewayInterface
         return $cred;
     }
 
-   protected function getBaseUrl(PaymentCredential $credentials): string
-{
-    if (!empty($credentials->base_url)) {
-        // Return exactly what is in DB (shorter version)
-        return rtrim($credentials->base_url, '/');
+    protected function getBaseUrl(PaymentCredential $credentials): string
+    {
+        // Prefer exactly what admin saved in the database
+        if (!empty($credentials->base_url)) {
+            $base = rtrim((string) $credentials->base_url, '/');
+        } elseif (strtolower((string) $credentials->environment) === 'sandbox') {
+            $base = 'https://sandbox.uddoktapay.com/api';
+        } else {
+            $base = 'https://uddoktapay.com/api';
+        }
+
+        // Ensure .../api suffix if admin saved host only
+        if (!str_ends_with($base, '/api')) {
+            $base .= '/api';
+        }
+
+        return $base;
     }
 
-    // Default Fallbacks
-    if ($credentials->environment === 'sandbox') {
-        return 'https://sandbox.uddoktapay.com/api';
+    protected function resolveApiKey(PaymentCredential $credentials): string
+    {
+        return $credentials->getResolvedSecretKey();
     }
-
-    return 'https://uddoktapay.com/api';
-}
 
     // -------------------------------------------------------------------------
     // Create Charge  →  POST {base_url}/api/checkout-v2
@@ -56,8 +65,7 @@ class UddoktaPayGateway implements PaymentGatewayInterface
     {
         $credentials = $this->getCredentials();
         $baseUrl     = $this->getBaseUrl($credentials);
-        $apiKey      = $credentials->secret_key;
-        
+        $apiKey      = $this->resolveApiKey($credentials);
 
         // Determine amount: full total for online orders, delivery charge for COD prepayment
         $amount = $order instanceof Order ? $order->grand_total : $order->amount;
@@ -71,34 +79,51 @@ class UddoktaPayGateway implements PaymentGatewayInterface
             }
         }
 
-        $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
-        $backendUrl  = rtrim(config('app.url'), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+        $backendUrl  = rtrim((string) config('app.url'), '/');
+
+        $fullName = $order instanceof Order
+            ? ($order->user->name ?? $order->shipping_full_name ?? 'Customer')
+            : ($order->checkout_data['full_name'] ?? 'Customer');
+        $email = $order instanceof Order
+            ? ($order->user->email ?? $order->shipping_email ?? null)
+            : ($order->checkout_data['email'] ?? null);
 
         $payload = [
-            'full_name'    => ($order instanceof Order ? $order->user->name : ($order->checkout_data['full_name'] ?? 'Customer')) ?: 'Customer',
-            'email'        => ($order instanceof Order ? $order->user->email : ($order->checkout_data['email'] ?? 'customer@example.com')) ?: 'customer@example.com',
-            'amount'       => (string) $amount,
+            'full_name'    => $fullName ?: 'Customer',
+            'email'        => $email ?: 'customer@example.com',
+            'amount'       => number_format((float) $amount, 2, '.', ''),
             'metadata'     => [
                 'user_id'      => (string) ($order->user_id ?? 1),
                 'order_id'     => (string) $orderId,
-                'order_number' => $orderNumber,
+                'order_number' => (string) $orderNumber,
                 'is_draft'     => $order instanceof Order ? '0' : '1',
             ],
-            'redirect_url' => rtrim(config('app.frontend_url'), '/') . "/payment/success",
-            'cancel_url'   => rtrim(config('app.frontend_url'), '/') . "/payment/cancel",
-            'webhook_url'  => rtrim(config('app.url'), '/') . "/API/V1/payment/uddoktapay/webhook",
+            'redirect_url' => $frontendUrl . '/payment/success',
+            'cancel_url'   => $frontendUrl . '/payment/cancel',
+            'webhook_url'  => $backendUrl . '/API/V1/payment/uddoktapay/webhook',
             'return_type'  => 'GET',
         ];
+
+        if (
+            $payload['email'] === 'customer@example.com'
+            || str_contains($frontendUrl, 'localhost')
+            || str_contains($frontendUrl, '127.0.0.1')
+        ) {
+            Log::warning('UddoktaPay payload may be rejected by gateway', [
+                'email' => $payload['email'],
+                'frontend_url' => $frontendUrl,
+                'redirect_url' => $payload['redirect_url'],
+            ]);
+        }
 
         Log::info('UddoktaPay - Initiation Details', [
             'order_id' => $orderId,
             'amount_calculated' => $amount,
             'base_url' => $baseUrl,
             'frontend_url' => $frontendUrl,
-            'redirect_url' => $payload['redirect_url']
+            'redirect_url' => $payload['redirect_url'],
         ]);
-
-        Log::info('UddoktaPay – Initiating payment', ['order' => $order->id, 'amount' => $payload['amount']]);
 
         try {
             $endpoint = "{$baseUrl}/checkout-v2";
@@ -109,31 +134,48 @@ class UddoktaPayGateway implements PaymentGatewayInterface
             ])->post($endpoint, $payload);
 
             $result = $response->json();
-            
+
             if (!$result) {
                 $rawBody = $response->body();
                 Log::error('UddoktaPay – Initiation failed (Non-JSON response)', [
-                    'order'  => $order->id, 
-                    'status' => $response->status(), 
-                    'raw'    => $rawBody
+                    'order'  => $order->id,
+                    'status' => $response->status(),
+                    'raw'    => $rawBody,
+                    'endpoint' => $endpoint,
                 ]);
-                return ['status' => false, 'message' => "UddoktaPay Error: Server returned non-JSON response (HTTP {$response->status()}). Please check logs."];
+                return ['status' => false, 'message' => "UddoktaPay Error: Server returned non-JSON response (HTTP {$response->status()}). Check gateway base URL / API key."];
             }
 
-            Log::info('UddoktaPay – Checkout API response', ['status' => $response->status(), 'body' => $result]);
+            Log::info('UddoktaPay – Checkout API response', ['status' => $response->status(), 'body' => $result, 'endpoint' => $endpoint]);
 
             // Success: API returns { status: true, payment_url: "..." }
             if ($response->successful() && !empty($result['payment_url'])) {
-                // Store a pending Master transaction flawlessly brilliantly properly
-                $order->transactions()->create([
-                    'user_id'        => $order->user_id ?? null,
-                    'gateway'        => 'uddoktapay',
-                    'transaction_id' => $result['invoice_id'] ?? ('UP_' . time()),
-                    'amount'         => $amount,
-                    'type'           => 'master',
-                    'description'    => "Pending payment for #{$orderNumber}",
-                    'status'         => 'pending',
-                ]);
+                try {
+                    $txPayload = [
+                        'user_id'        => $order->user_id ?? null,
+                        'gateway'        => 'uddoktapay',
+                        'transaction_id' => $result['invoice_id'] ?? ('UP_' . time()),
+                        'amount'         => $amount,
+                        'type'           => 'master',
+                        'description'    => "Pending payment for #{$orderNumber}",
+                        'status'         => 'pending',
+                    ];
+
+                    if ($order instanceof Order) {
+                        $txPayload['order_id'] = $order->id;
+                        $order->transactions()->create($txPayload);
+                    } else {
+                        $txPayload['order_id'] = null;
+                        $txPayload['draft_order_id'] = $order->id;
+                        \App\Models\Transaction::create($txPayload);
+                    }
+                } catch (\Throwable $e) {
+                    // Do not block redirect if pending transaction row fails
+                    Log::error('UddoktaPay – Failed to store pending transaction', [
+                        'order' => $orderId,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
 
                 return [
                     'status'       => true,
@@ -163,9 +205,7 @@ class UddoktaPayGateway implements PaymentGatewayInterface
     {
         $credentials = $this->getCredentials();
         $baseUrl     = $this->getBaseUrl($credentials);
-        $apiKey      = (str_starts_with($credentials->secret_key, 'eyJpdiI6')) 
-              ? decrypt($credentials->secret_key) 
-              : $credentials->secret_key;
+        $apiKey      = $this->resolveApiKey($credentials);
 
         Log::info('UddoktaPay – Verifying payment', ['invoice_id' => $invoiceId]);
 

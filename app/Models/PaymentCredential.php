@@ -44,9 +44,43 @@ class PaymentCredential extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'secret_key' => 'encrypted',
+        // Keep plain text - Laravel 'encrypted' cast breaks after APP_KEY rotate
+        // and produces "The payload is invalid" during payment initiation.
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Safely resolve the stored API key (supports legacy encrypted values).
+     */
+    public function getResolvedSecretKey(): string
+    {
+        $raw = $this->attributes['secret_key'] ?? null;
+
+        if (!is_string($raw) || trim($raw) === '' || $raw === '********') {
+            throw new \RuntimeException(
+                'Payment API key is missing. Please re-save the Full API Key in Admin → Payment settings.'
+            );
+        }
+
+        // Legacy Laravel encrypted cast payload
+        $looksEncrypted = str_starts_with($raw, 'eyJpdiI6')
+            || (str_starts_with($raw, '{') && str_contains($raw, '"iv"'));
+
+        if ($looksEncrypted) {
+            try {
+                $decrypted = decrypt($raw);
+                if (is_string($decrypted) && trim($decrypted) !== '') {
+                    return $decrypted;
+                }
+            } catch (\Throwable $e) {
+                throw new \RuntimeException(
+                    'Payment API key cannot be decrypted (APP_KEY mismatch). Please re-save the Full API Key in Admin → Payment settings.'
+                );
+            }
+        }
+
+        return $raw;
+    }
 
     /**
      * Boot the model to handle single active config per gateway name.

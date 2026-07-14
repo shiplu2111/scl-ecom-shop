@@ -15,7 +15,7 @@ class PaymentCredentialSeeder extends Seeder
         \App\Models\PaymentCredential::updateOrCreate(
             ['name' => 'UddoktaPay'],
             [
-                'base_url' => 'https://sandbox.uddoktapay.com',
+                'base_url' => 'https://sandbox.uddoktapay.com/api',
                 'environment' => 'sandbox',
                 'secret_key' => 'sandbox_uddoktapay_secret_key',
                 'is_active' => true,

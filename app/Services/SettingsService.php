@@ -12,9 +12,8 @@ class SettingsService
      */
     public function getSettingsByGroup(string $group): array
     {
-        return Cache::rememberForever("settings.group.{$group}", function () use ($group) {
-            $settings = Setting::where('group', $group)->get()->pluck('value', 'key')->toArray();
-            return $settings ?: [];
+        return Cache::remember("settings.group.{$group}", now()->addHours(6), function () use ($group) {
+            return Setting::where('group', $group)->get()->pluck('value', 'key')->toArray() ?: [];
         });
     }
 

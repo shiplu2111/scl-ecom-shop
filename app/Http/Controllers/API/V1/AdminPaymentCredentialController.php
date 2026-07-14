@@ -58,6 +58,14 @@ class AdminPaymentCredentialController extends BaseController
             'is_active' => 'boolean',
         ]);
 
+        // Don't overwrite API key when UI sends masked placeholder
+        if (array_key_exists('secret_key', $validated)) {
+            $key = trim((string) $validated['secret_key']);
+            if ($key === '' || $key === '********' || str_starts_with($key, '****')) {
+                unset($validated['secret_key']);
+            }
+        }
+
         $credential->update($validated);
 
         return $this->successResponse($credential, 'Payment credential updated successfully');

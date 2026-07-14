@@ -71,26 +71,61 @@ class SettingsController extends Controller
     /**
      * Test email connection gracefully smartly efficiently.
      */
-    public function testEmail(Request $request)
+    public function testEmail(Request $request, \App\Services\MailConfigService $mailConfig)
     {
         $request->validate([
             'email' => 'required|email'
         ]);
 
         try {
-            \Illuminate\Support\Facades\Mail::raw('This is a test email to verify SMTP settings.', function ($message) use ($request) {
-                $message->to($request->email)
-                    ->subject('SMTP Connection Test');
-            });
+            $settings = app(\App\Services\SettingsService::class)->getSettingsByGroup('email');
+
+            if (empty($settings['mail_host']) || empty($settings['mail_username']) || empty($settings['mail_password'])) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'SMTP settings incomplete. Please save mail host, username and password first.',
+                ], 422);
+            }
+
+            // Apply DB SMTP settings for this request
+            $mailConfig->apply();
+
+            $mailer = config('mail.default');
+            $from = (string) config('mail.from.address');
+
+            if ($mailer !== 'smtp') {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Mailer is not set to SMTP. Clear cache and try again.',
+                ], 422);
+            }
+
+            \Illuminate\Support\Facades\Mail::raw(
+                "This is a test email to verify SMTP settings.\n\nSent at: " . now()->toDateTimeString(),
+                function ($message) use ($request, $from) {
+                    $message->to($request->email)
+                        ->subject('SMTP Connection Test');
+
+                    if ($from) {
+                        $message->from($from, config('mail.from.name'));
+                        $message->sender($from);
+                    }
+
+                    $replyTo = config('mail.reply_to_override');
+                    if ($replyTo) {
+                        $message->replyTo($replyTo);
+                    }
+                }
+            );
 
             return response()->json([
                 'status' => true,
-                'message' => 'Test email sent successfully!'
+                'message' => 'Test email sent successfully.',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
-                'message' => 'Failed to send test email: ' . $e->getMessage()
+                'message' => 'Failed to send test email: ' . $e->getMessage(),
             ], 500);
         }
     }
