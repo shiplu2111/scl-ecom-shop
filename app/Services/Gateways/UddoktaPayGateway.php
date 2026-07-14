@@ -79,8 +79,20 @@ class UddoktaPayGateway implements PaymentGatewayInterface
             }
         }
 
-        $frontendUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+        $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
         $backendUrl  = rtrim((string) config('app.url'), '/');
+
+        if ($frontendUrl === '' || str_contains($frontendUrl, 'localhost') || str_contains($frontendUrl, '127.0.0.1')) {
+            throw new \Exception(
+                'Invalid APP_FRONTEND_URL. Set your live shop URL in .env (APP_FRONTEND_URL), then run: php artisan config:clear'
+            );
+        }
+
+        if ($backendUrl === '' || str_contains($backendUrl, 'localhost') || str_contains($backendUrl, '127.0.0.1')) {
+            throw new \Exception(
+                'Invalid APP_URL. Set your live API URL in .env (APP_URL), then run: php artisan config:clear'
+            );
+        }
 
         $fullName = $order instanceof Order
             ? ($order->user->name ?? $order->shipping_full_name ?? 'Customer')
@@ -105,24 +117,13 @@ class UddoktaPayGateway implements PaymentGatewayInterface
             'return_type'  => 'GET',
         ];
 
-        if (
-            $payload['email'] === 'customer@example.com'
-            || str_contains($frontendUrl, 'localhost')
-            || str_contains($frontendUrl, '127.0.0.1')
-        ) {
-            Log::warning('UddoktaPay payload may be rejected by gateway', [
-                'email' => $payload['email'],
-                'frontend_url' => $frontendUrl,
-                'redirect_url' => $payload['redirect_url'],
-            ]);
-        }
-
         Log::info('UddoktaPay - Initiation Details', [
             'order_id' => $orderId,
             'amount_calculated' => $amount,
             'base_url' => $baseUrl,
             'frontend_url' => $frontendUrl,
             'redirect_url' => $payload['redirect_url'],
+            'cancel_url' => $payload['cancel_url'],
         ]);
 
         try {

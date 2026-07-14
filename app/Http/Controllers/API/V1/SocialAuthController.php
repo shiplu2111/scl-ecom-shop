@@ -58,7 +58,10 @@ class SocialAuthController extends BaseController
             $response = $this->authService->findOrCreateSocialUser($provider, $socialUser);
             
             // Redirect back to frontend with token
-            $frontendUrl = config('app.frontend_url', 'http://localhost:3001');
+            $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+            if ($frontendUrl === '') {
+                throw new \Exception('APP_FRONTEND_URL is not configured.');
+            }
             $redirectUrl = $frontendUrl . '/auth/social-callback?token=' . $response['access_token'] . 
                             '&expires_in=' . $response['expires_in'] . 
                             '&token_type=bearer';

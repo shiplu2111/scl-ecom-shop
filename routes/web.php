@@ -28,16 +28,23 @@ Route::middleware(['installed'])->group(function () {
 
 // Payment Gateway Redirects (Forward to Frontend)
 Route::get('/payment/success', function (\Illuminate\Http\Request $request) {
-    // Priority: .env > fallback to localhost:3000
-    $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
-    
-    // If we're on port 80 but frontend is on another port, ensure we use the full URL
-    Log::info('Payment success redirect triggered', ['target' => $frontendUrl]);
-    
+    $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+
+    if ($frontendUrl === '') {
+        abort(500, 'APP_FRONTEND_URL is not configured.');
+    }
+
+    \Log::info('Payment success redirect triggered', ['target' => $frontendUrl]);
+
     return redirect($frontendUrl . '/payment/success?' . http_build_query($request->all()));
 })->name('payment.success');
 
 Route::get('/payment/cancel', function (\Illuminate\Http\Request $request) {
-    $frontendUrl = rtrim(config('app.frontend_url', 'http://localhost:3000'), '/');
+    $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
+
+    if ($frontendUrl === '') {
+        abort(500, 'APP_FRONTEND_URL is not configured.');
+    }
+
     return redirect($frontendUrl . '/payment/cancel?' . http_build_query($request->all()));
 })->name('payment.cancel');

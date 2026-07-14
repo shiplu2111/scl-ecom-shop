@@ -6,6 +6,8 @@ use App\Models\Order;
 use App\Events\DeliveryChargePaid;
 use Illuminate\Support\Facades\DB;
 
+class PaymentService
+{
     protected PaymentGatewayConfigService $configService;
 
     public function __construct(PaymentGatewayConfigService $configService)

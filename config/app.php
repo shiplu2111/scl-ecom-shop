@@ -54,9 +54,10 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
-    'frontend_url' => env('APP_FRONTEND_URL', 'http://localhost:3001'),
+    // Never default payment/auth redirects to localhost in production — set APP_FRONTEND_URL in .env
+    'frontend_url' => rtrim((string) (env('APP_FRONTEND_URL') ?: env('APP_URL', '')), '/'),
 
-    'admin_url' => env('APP_ADMIN_URL', 'http://localhost:3000'),
+    'admin_url' => rtrim((string) (env('APP_ADMIN_URL') ?: env('APP_URL', '')), '/'),
 
     /*
     |--------------------------------------------------------------------------

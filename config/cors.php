@@ -19,12 +19,12 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        env('APP_FRONTEND_URL', 'http://localhost:3001'),
-        env('APP_ADMIN_URL', 'http://localhost:3000'),
+    'allowed_origins' => array_values(array_filter([
+        env('APP_FRONTEND_URL'),
+        env('APP_ADMIN_URL'),
         'https://ecom-shop.saracodelabs.com.bd',
         'https://shop-admin.saracodelabs.com.bd',
-    ],
+    ])),
 
     'allowed_origins_patterns' => [],
 
